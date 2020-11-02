@@ -11,18 +11,20 @@
 using namespace std;
 
 // Taken from https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
-vector<string> split (string s, string delimiter) {
+vector<string> split(string s, string delimiter)
+{
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     string token;
     vector<string> res;
 
-    while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
-        token = s.substr (pos_start, pos_end - pos_start);
+    while ((pos_end = s.find(delimiter, pos_start)) != string::npos)
+    {
+        token = s.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        res.push_back (token);
+        res.push_back(token);
     }
 
-    res.push_back (s.substr (pos_start));
+    res.push_back(s.substr(pos_start));
     return res;
 }
 
@@ -64,11 +66,13 @@ public:
     {
         string message = msg->data.c_str();
         vector<string> stateValues = split(message, ",");
-        // -- format is left_vel, right_vel
+        // -- format is left_vel, right_vel, left_pos, right_pos
         // @ Todo - joint position also required for odometry
         vel[0] = stod(stateValues.at(0).c_str());
         vel[1] = stod(stateValues.at(1).c_str());
-        ROS_INFO("I heard: [%s %s]", stateValues.at(0).c_str(), stateValues.at(1).c_str());
+        pos[0] = stod(stateValues.at(2).c_str());
+        pos[1] = stod(stateValues.at(3).c_str());
+        ROS_INFO("I heard: [lv=%s rv=%s lp=%s rp=%s]", stateValues.at(0).c_str(), stateValues.at(1).c_str(), stateValues.at(2).c_str(), stateValues.at(3).c_str());
     }
 
     void setCmdPublisher(ros::Publisher *publisher)
