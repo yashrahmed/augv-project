@@ -11,26 +11,29 @@
 #define MOTOR_STATE_PUB_RATE_MS (2000)
 
 const float motor_steps_per_rotation = 2048; // @TODO - have a multiplier for differing valuefor left and right wheel.
-float max_motor_speed = 5000, left_speed = 0, right_speed = 0;
+float max_motor_speed = 5000, left_ros_speed = 0, left_step_speed = 0, right_ros_speed = 0, right_step_speed = 0;
 AccelStepper leftStepper = AccelStepper(AccelStepper::FULL4WIRE, 10, 11, 12, 13);
 AccelStepper rightStepper = AccelStepper(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
 long prev_state_tx_time = 0;
 
 // @TODO - change to incorporate different left and right wheel sizes.
-float ros_speed_to_step_speed(float ros_speed, int steps_per_rotation) {
-  return (ros_speed / (2 * PI)) * steps_per_rotation;
+float ros_speed_to_step_speed(float ros_speed) {
+  return (ros_speed / (2 * PI)) * motor_steps_per_rotation;
 }
 
-float steps_to_angle(long steps) {
+float steps_to_ros_angle(long steps) {
   return 2 * PI * (steps / motor_steps_per_rotation);
 }
 
 void print_motor_state() {
   Serial.print("MOT,");
-  Serial.print(left_speed); Serial.print(",");
-  Serial.print(right_speed); Serial.print(",");
-  Serial.print(steps_to_angle(-1 * leftStepper.currentPosition())); Serial.print(",");
-  Serial.println(steps_to_angle(rightStepper.currentPosition()));
+  Serial.print(left_ros_speed); Serial.print(",");
+  Serial.print(right_ros_speed); Serial.print(",");
+  // -1 direction multiplier is applied as the motors are mirrored relative to each other.
+  // This makes the positive direction of one the oppsite of the other. So -ve speed is set for the
+  // left motor and this leads to -ve cuurent position, which has to be made +ve.
+  Serial.print(-steps_to_ros_angle(leftStepper.currentPosition())); Serial.print(",");
+  Serial.println(steps_to_ros_angle(rightStepper.currentPosition()));
 }
 
 pt pt_motor_cmd_rx_thread_handle;
@@ -42,10 +45,14 @@ int motor_cmd_rx_thread(struct pt *pt_handle) {
     String cmd = Serial.readStringUntil('\n');
     int sep_idx = cmd.indexOf(",", 0);
     if (sep_idx != -1) {
-      left_speed = ros_speed_to_step_speed(cmd.substring(0, sep_idx).toFloat(), motor_steps_per_rotation);
-      right_speed = ros_speed_to_step_speed(cmd.substring(sep_idx + 1, cmd.length()).toFloat(), motor_steps_per_rotation);
-      leftStepper.setSpeed(-1 * left_speed);
-      rightStepper.setSpeed(right_speed);
+      left_ros_speed = cmd.substring(0, sep_idx).toFloat();
+      left_step_speed = ros_speed_to_step_speed(left_ros_speed);
+      right_ros_speed = cmd.substring(sep_idx + 1, cmd.length()).toFloat();
+      right_step_speed = ros_speed_to_step_speed(right_ros_speed);
+      // -1 direction multiplier is applied as the motors are mirrored relative to each other.
+      // This makes the positive direction of one the oppsite of the other.
+      leftStepper.setSpeed(-1 * left_step_speed);
+      rightStepper.setSpeed(right_step_speed);
     }
   }
   PT_END(pt_handle);
@@ -136,10 +143,9 @@ int imu_tx_thread(struct pt* pt_handle) {
 }
 
 /*
-  Other control variables.
-*/
-long currentTime = 0;
 
+   MAIN CONTROL METHODS BELOW.
+*/
 
 void setup() {
   // put your setup code here, to run once:
@@ -156,14 +162,12 @@ void setup() {
   // set the speed at 15 rpm:
   leftStepper.setMaxSpeed(max_motor_speed);
   rightStepper.setMaxSpeed(max_motor_speed);
-  leftStepper.setSpeed(left_speed);
-  rightStepper.setSpeed(right_speed);
+  leftStepper.setSpeed(left_step_speed);
+  rightStepper.setSpeed(right_step_speed);
 
   PT_INIT(&pt_imu_tx_thread_handle);
   PT_INIT(&pt_motor_cmd_rx_thread_handle);
   PT_INIT(&pt_motor_state_tx_thread_handle);
-
-  currentTime = millis();
 }
 
 void loop() {
