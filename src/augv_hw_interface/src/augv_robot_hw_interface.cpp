@@ -65,6 +65,7 @@ public:
         string message = msg->data.c_str();
         vector<string> stateValues = split(message, ",");
         // -- format is left_vel, right_vel
+        // @ Todo - joint position also required for odometry
         vel[0] = stod(stateValues.at(0).c_str());
         vel[1] = stod(stateValues.at(1).c_str());
         ROS_INFO("I heard: [%s %s]", stateValues.at(0).c_str(), stateValues.at(1).c_str());
