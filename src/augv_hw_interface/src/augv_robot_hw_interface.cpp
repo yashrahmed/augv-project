@@ -62,14 +62,12 @@ public:
 
     void readRobotStateCallback(const std_msgs::String::ConstPtr &msg)
     {
-        // @ToDo - Add ci
         string message = msg->data.c_str();
         vector<string> stateValues = split(message, ",");
         // -- format is left_vel, right_vel
         vel[0] = stod(stateValues.at(0).c_str());
         vel[1] = stod(stateValues.at(1).c_str());
         ROS_INFO("I heard: [%s %s]", stateValues.at(0).c_str(), stateValues.at(1).c_str());
-
     }
 
     void setCmdPublisher(ros::Publisher *publisher)
@@ -85,21 +83,14 @@ public:
     virtual void update(const ros::TimerEvent &e)
     {
         elapsed_time_ = ros::Duration(e.current_real - e.last_real);
-        read(ros::Time::now(), elapsed_time_);
         manager->update(ros::Time::now(), elapsed_time_);
         write(ros::Time::now(), elapsed_time_);
     }
 
     /*
      read() and write overrides for the RobotHW parent class methods used by ros_control.
+     @Note - read is not necessary as the pos/vel/effort values are updates by a topic subscriber..
     */
-
-    virtual void read(const ros::Time &time, const ros::Duration &period)
-    {
-        ROS_INFO("Reading from robot left wheel joint pos=%f vel=%f effort=%f", pos[0], vel[0], effort[0]);
-        ROS_INFO("Reading from robot right wheel joint pos=%f vel=%f effort=%f", pos[1], vel[1], effort[1]);
-        ROS_INFO("_____________");
-    }
 
     virtual void write(const ros::Time &time, const ros::Duration &period)
     {
@@ -149,7 +140,7 @@ int main(int argc, char **argv)
     // NOTE: We run the ROS loop in a separate thread as external calls such
     // as service callbacks to load controllers can block the (main) control loop
     // or may time out if waiting for the main loop to respond.
-    ros::AsyncSpinner spinner(2);
+    ros::AsyncSpinner spinner(2); // use 2 threads..
     spinner.start();
 
     ros::waitForShutdown();

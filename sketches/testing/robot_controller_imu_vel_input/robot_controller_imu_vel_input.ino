@@ -9,11 +9,16 @@
 */
 #define MOTOR_CMD_SAMPLE_RATE_MS (200);
 
-int max_motor_speed = 5000, left_speed = 0, right_speed = 0;
+const int motor_steps_per_rotation = 2048; // @TODO - have separate values for left and right wheel.
+float max_motor_speed = 5000, left_speed = 0, right_speed = 0;
 AccelStepper leftStepper = AccelStepper(AccelStepper::FULL4WIRE, 10, 11, 12, 13);
 AccelStepper rightStepper = AccelStepper(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
 long prev_cms_rx_time = 0;
 
+// @TODO - change to incorporate different left and right wheel sizes.
+float ros_speed_to_step_speed(float ros_speed, int steps_per_rotation) {
+  return (ros_speed / (2 * PI)) * steps_per_rotation;
+}
 
 pt pt_motor_cmd_rx_thread_handle;
 int motor_cmd_rx_thread(struct pt *pt_handle) {
@@ -24,8 +29,8 @@ int motor_cmd_rx_thread(struct pt *pt_handle) {
     String cmd = Serial.readStringUntil('\n');
     int sep_idx = cmd.indexOf(",", 0);
     if (sep_idx != -1) {
-      left_speed = cmd.substring(0, sep_idx).toFloat();
-      right_speed = cmd.substring(sep_idx + 1, cmd.length()).toFloat();
+      left_speed = ros_speed_to_step_speed(cmd.substring(0, sep_idx).toFloat(), motor_steps_per_rotation);
+      right_speed = ros_speed_to_step_speed(cmd.substring(sep_idx + 1, cmd.length()).toFloat(), motor_steps_per_rotation);
       leftStepper.setSpeed(-1 * left_speed);
       rightStepper.setSpeed(right_speed);
     }
