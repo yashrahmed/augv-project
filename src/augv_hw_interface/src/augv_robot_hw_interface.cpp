@@ -130,10 +130,15 @@ int main(int argc, char **argv)
     ros::Duration period(0);
     ros::Rate loop_rate(10);
 
+    string inputTopicName = "/vel_in", outputTopicName = "/vel_out";
+
+    ros::param::get(ros::this_node::getName() + "/input_topic", inputTopicName);
+    ros::param::get(ros::this_node::getName() + "/output_topic", outputTopicName);
+
     SimpleAUGVHardwareInterface robotHwInterface;
 
-    ros::Subscriber sub = nh.subscribe("/vel_in", 1000, &SimpleAUGVHardwareInterface::readRobotStateCallback, &robotHwInterface);
-    ros::Publisher velCmdPublisher = nh.advertise<std_msgs::String>("/vel_out", 1000);
+    ros::Subscriber sub = nh.subscribe(inputTopicName, 1000, &SimpleAUGVHardwareInterface::readRobotStateCallback, &robotHwInterface);
+    ros::Publisher velCmdPublisher = nh.advertise<std_msgs::String>(outputTopicName, 1000);
     controller_manager::ControllerManager cm(&robotHwInterface, nh);
 
     robotHwInterface.setManager(&cm);
