@@ -7,17 +7,30 @@
 /*
   Stepper motor control variable setup and method definitions.
 */
-#define MOTOR_CMD_SAMPLE_RATE_MS (200);
+#define MOTOR_CMD_SAMPLE_RATE_MS (200)
+#define MOTOR_STATE_PUB_RATE_MS (2000)
 
-const int motor_steps_per_rotation = 2048; // @TODO - have separate values for left and right wheel.
+const float motor_steps_per_rotation = 2048; // @TODO - have a multiplier for differing valuefor left and right wheel.
 float max_motor_speed = 5000, left_speed = 0, right_speed = 0;
 AccelStepper leftStepper = AccelStepper(AccelStepper::FULL4WIRE, 10, 11, 12, 13);
 AccelStepper rightStepper = AccelStepper(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
-long prev_cms_rx_time = 0;
+long prev_state_tx_time = 0;
 
 // @TODO - change to incorporate different left and right wheel sizes.
 float ros_speed_to_step_speed(float ros_speed, int steps_per_rotation) {
   return (ros_speed / (2 * PI)) * steps_per_rotation;
+}
+
+float steps_to_angle(long steps) {
+  return 2 * PI * (steps / motor_steps_per_rotation);
+}
+
+void print_motor_state() {
+  Serial.print("MOT,");
+  Serial.print(left_speed); Serial.print(",");
+  Serial.print(right_speed); Serial.print(",");
+  Serial.print(steps_to_angle(-1 * leftStepper.currentPosition())); Serial.print(",");
+  Serial.println(steps_to_angle(rightStepper.currentPosition()));
 }
 
 pt pt_motor_cmd_rx_thread_handle;
@@ -34,6 +47,17 @@ int motor_cmd_rx_thread(struct pt *pt_handle) {
       leftStepper.setSpeed(-1 * left_speed);
       rightStepper.setSpeed(right_speed);
     }
+  }
+  PT_END(pt_handle);
+}
+
+pt pt_motor_state_tx_thread_handle;
+int motor_state_tx_thread(struct pt* pt_handle) {
+  PT_BEGIN(pt_handle);
+  while (true) {
+    PT_WAIT_UNTIL(pt_handle, millis() - prev_state_tx_time >= MOTOR_STATE_PUB_RATE_MS);
+    print_motor_state();
+    prev_state_tx_time = millis();
   }
   PT_END(pt_handle);
 }
@@ -137,6 +161,7 @@ void setup() {
 
   PT_INIT(&pt_imu_tx_thread_handle);
   PT_INIT(&pt_motor_cmd_rx_thread_handle);
+  PT_INIT(&pt_motor_state_tx_thread_handle);
 
   currentTime = millis();
 }
@@ -147,4 +172,5 @@ void loop() {
   leftStepper.runSpeed();
   PT_SCHEDULE(imu_tx_thread(&pt_imu_tx_thread_handle));
   PT_SCHEDULE(motor_cmd_rx_thread(&pt_motor_cmd_rx_thread_handle));
+  PT_SCHEDULE(motor_state_tx_thread(&pt_motor_state_tx_thread_handle));
 }
