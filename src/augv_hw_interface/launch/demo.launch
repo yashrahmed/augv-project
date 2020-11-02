@@ -1,0 +1,10 @@
+<launch>
+    <rosparam file="$(find augv_hw_interface)/resources/robot-config.yml" command="load"/>
+
+    <node name="hardware_interface" pkg="augv_hw_interface" type="augv_robot_hw_interface" output="screen"/>
+
+    <!-- spawn controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller" />
+    <!-- mobile_base_controller-->
+
+</launch>
