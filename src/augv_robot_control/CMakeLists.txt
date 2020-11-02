@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(augv_hw_interface)
+project(augv_robot_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -106,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES augv_hw_interface
+#  LIBRARIES augv_robot_control
 #  CATKIN_DEPENDS controller_interface controller_manager hardware_interface pluginlib roscpp
 #  DEPENDS system_lib
 )
@@ -124,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/augv_hw_interface.cpp
+#   src/${PROJECT_NAME}/augv_robot_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -135,7 +135,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/augv_hw_interface_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/augv_robot_control_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -202,10 +202,14 @@ target_link_libraries(augv_robot_hw_interface ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_augv_hw_interface.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_augv_robot_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_install_python(PROGRAMS scripts/hw_relay_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
