@@ -210,6 +210,6 @@ target_link_libraries(augv_robot_hw_interface ${catkin_LIBRARIES})
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_install_python(PROGRAMS scripts/hw_relay_node.py
+catkin_install_python(PROGRAMS scripts/robot_driver_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

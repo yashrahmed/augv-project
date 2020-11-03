@@ -2,12 +2,19 @@
     <rosparam file="$(find augv_robot_control)/resources/robot-config.yml" command="load"/>
 
     <node name="hardware_interface" pkg="augv_robot_control" type="augv_robot_hw_interface" output="screen">
-        <param name="input_topic" value="/ctrl_vel_in"/>
-        <param name="output_topic" value="/ctrl_vel_out"/>
+        <param name="input_topic" value="/raw/motor"/>
+        <param name="output_topic" value="/cmd/motor"/>
     </node>
 
     <!-- spawn controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller" />
     <!-- mobile_base_controller-->
+
+    <node pkg="augv_robot_control" type="robot_driver_node.py" name="driver_node" clear_params="true" output="screen">
+        <param name="gps_output_topic" value="/raw/gps" />
+        <param name="imu_output_topic" value="/raw/imu" />
+        <param name="motor_state_output_topic" value="/raw/motor"/>
+        <param name="motor_cmd_input_topic" value="/cmd/motor"/>
+    </node>
 
 </launch>

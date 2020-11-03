@@ -137,7 +137,7 @@ int imu_tx_thread(struct pt* pt_handle) {
   while (true) {
     PT_WAIT_UNTIL(pt_handle, millis() - prev_imu_tx_time >= BNO055_SAMPLERATE_DELAY_MS);
     print_imu_data();
-    prev_imu_tx_time = millis(); // Some delay expecteda as a result of serial transmission.
+    prev_imu_tx_time = millis(); // Some delay expected as a result of serial transmission.
   }
   PT_END(pt_handle);
 }
