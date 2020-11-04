@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     robotHwInterface.setManager(&cm);
     robotHwInterface.setCmdPublisher(&velCmdPublisher);
 
-    ros::Duration updateFreq = ros::Duration(0.5); //every 0.5 seconds....
+    ros::Duration updateFreq = ros::Duration(0.05); //every 0.05 seconds....
     ros::Timer non_realtime_loop = nh.createTimer(updateFreq, &SimpleAUGVHardwareInterface::update, &robotHwInterface);
 
     // NOTE: We run the ROS loop in a separate thread as external calls such
