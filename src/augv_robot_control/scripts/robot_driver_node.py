@@ -19,15 +19,16 @@ def get_serial_conn():
 def route_serial_data(conn, imu_pub, gps_pub, mot_pub):
     line = conn.readline()
     try:
-        payload = line.strip().decode('utf-8')
+        payload = line.strip().decode('utf-8').replace(',nan', '')
         if len(payload) > 3:
             msg_type = payload[0:3]
+            msg_body = payload[4:]
             if msg_type == 'IMU':
-                imu_pub.publish(payload[4:])
+                imu_pub.publish(msg_body)
             elif msg_type == 'GPS':
-                gps_pub.publish(payload[4:])
+                gps_pub.publish(msg_body)
             elif msg_type == 'MOT':
-                mot_pub.publish(payload[4:])
+                mot_pub.publish(msg_body)
     except (UnicodeDecodeError, ValueError):
         return None
 

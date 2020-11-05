@@ -1,0 +1,11 @@
+<launch>
+
+    <node pkg="augv_localization" type="imu_sensor_node.py" name="imu_sensor_node" clear_params="true" output="screen">
+        <param name="input_topic" value="/raw/imu" />
+        <param name="output_topic" value="/sensor/imu" />
+        <param name="frame_id" value="base_link" />
+    </node>
+
+    <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_localization)/rviz/rviz_imu_vehicle.rviz"/>
+
+</launch> 
