@@ -37,7 +37,7 @@ mobile_base_controller:
   angular:
     z:
       has_velocity_limits    : true
-      max_velocity           : 1.7  # rad/s #@TODO - Figure out the correct value
+      max_velocity           : 0.9804 # rad/s #@TODO - [(2*Vmax) / d] for skid steer and [Vmax / d] for diff steer.
       has_acceleration_limits: true
       max_acceleration       : 1.5  # rad/s^2 # rad/s #@TODO - Figure out the correct value
       has_jerk_limits        : true
