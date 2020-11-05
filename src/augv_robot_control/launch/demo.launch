@@ -1,14 +1,17 @@
 <launch>
     <rosparam file="$(find augv_robot_control)/resources/robot-config.yml" command="load"/>
 
+    <remap from="/mobile_base_controller/odom" to="/sensor/odom"/>
+
     <node name="hardware_interface" pkg="augv_robot_control" type="augv_robot_hw_interface" output="screen">
         <param name="input_topic" value="/raw/motor"/>
         <param name="output_topic" value="/cmd/motor"/>
     </node>
 
     <!-- spawn controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller" />
     <!-- mobile_base_controller-->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller"/>
+
 
     <node pkg="augv_robot_control" type="robot_driver_node.py" name="driver_node" clear_params="true" output="screen">
         <param name="gps_output_topic" value="/raw/gps" />
