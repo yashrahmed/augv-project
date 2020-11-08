@@ -7,8 +7,8 @@ from std_msgs.msg import String
 
 LIN_ACC_COV = 1e-4 ** 2  # 0.01m/s^2
 # errors have to be made high to compensate for sensor lag
-ANG_VEL_COV = 2.5e-6
-ORIENT_COV = 2.5e-6
+ANG_VEL_COV = 6.25e-4
+ORIENT_COV = 6.25e-4
 ROS_RATE_HZ = 50
 
 INPUT_TOPIC = '/input'
