@@ -17,6 +17,7 @@
         <param name="world_frame" value="odom" />
 
         <param name="imu0" value="/sensor/imu" />
+        <param name="imu0_relative" value="true"/>
         <param name="imu0_differential" value="false" />
         <param name="imu0_queue_size" value="1000" />
         <param name="imu0_remove_gravitational_acceleration" value="false" />
