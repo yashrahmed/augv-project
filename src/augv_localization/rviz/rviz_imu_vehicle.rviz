@@ -106,7 +106,7 @@ Visualization Manager:
           Color: 204; 51; 204
           Scale: 1
           Value: true
-        Value: true
+        Value: false
       Enabled: true
       Keep: 1
       Name: Odometry
@@ -157,7 +157,7 @@ Visualization Manager:
         Shaft Length: 0.6000000238418579
         Shaft Radius: 0.029999999329447746
         Value: Arrow
-      Topic: /odometry/filtered_global
+      Topic: /odometry/filtered
       Unreliable: false
       Value: true
   Enabled: true
@@ -188,7 +188,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.4715576171875
+      Distance: 11.580818176269531
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
