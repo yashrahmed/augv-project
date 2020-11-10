@@ -1,0 +1,21 @@
+local_costmap:
+  # Costmap2DROS transform timeout. Current time: 1601948163.9589, global_pose stamp: 0.0000, tolerance: 0.5000
+  # why does it not work with odom???? #transform delays??
+  # Reasons
+  # 1. robot_state_publisher -> interferes with ekf tf publish. Shutting this down leads to the robot generating plans but still produces errors.
+  # 2. base frame mismatch b/w global and local planners. This requires conversion from local to global frame (leading to errors)
+  # 3. Increasing publish frequency of the EKF nodes helps, but produces errors.
+  # 4. transform tolerance does not help.
+
+  global_frame:  map 
+  robot_base_frame: base_link
+
+  update_frequency: 10.0
+  publish_frequency: 10.0
+  transform_tolerance: 0.5  
+
+  static_map: false  
+  rolling_window: true
+  width: 0.61
+  height: 0.61
+  resolution: 0.01
