@@ -1,0 +1,7 @@
+<launch>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find augv_navigation)/resources/maps/map.yaml"/>
+
+    <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_navigation)/rviz/rviz_nav.rviz"/>
+
+</launch>
