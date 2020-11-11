@@ -9,3 +9,6 @@ cost_scaling_factor: 3.0
 map_type: costmap
 observation_sources: scan
 scan: {sensor_frame: base_scan, data_type: LaserScan, topic: /dummy_scan, marking: true, clearing: true}
+
+update_frequency: 8.0
+publish_frequency: 8.0
