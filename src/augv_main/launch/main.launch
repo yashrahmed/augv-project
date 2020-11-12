@@ -1,0 +1,109 @@
+<launch>
+    <rosparam file="$(find augv_robot_control)/resources/robot-config.yml" command="load"/>
+
+    <remap from="/mobile_base_controller/odom" to="/sensor/odom"/>
+
+    <node name="hardware_interface" pkg="augv_robot_control" type="augv_robot_hw_interface" output="screen">
+        <param name="input_topic" value="/raw/motor"/>
+        <param name="output_topic" value="/cmd/motor"/>
+    </node>
+
+    <!-- spawn controllers -->
+    <!-- mobile_base_controller-->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller"/>
+
+    <node pkg="augv_robot_control" type="robot_driver_node.py" name="driver_node" clear_params="true" output="screen">
+        <param name="gps_output_topic" value="/raw/gps" />
+        <param name="imu_output_topic" value="/raw/imu" />
+        <param name="motor_state_output_topic" value="/raw/motor"/>
+        <param name="motor_cmd_input_topic" value="/cmd/motor"/>
+    </node>
+
+        <node pkg="augv_localization" type="imu_sensor_node.py" name="imu_sensor_node" clear_params="true" output="screen">
+        <param name="input_topic" value="/raw/imu" />
+        <param name="output_topic" value="/sensor/imu" />
+        <param name="frame_id" value="base_link" />
+    </node>
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf_base" clear_params="true">
+        <param name="frequency" value="10.0" />
+        <param name="sensor_timeout" value="0.2" />
+        <param name="two_d_mode" value="true" />
+        <param name="publish_tf" value="true" />
+        <param name="map_frame" value="map" />
+        <param name="odom_frame" value="odom" />
+        <param name="base_link_frame" value="base_link" />
+        <param name="world_frame" value="odom" />
+
+        <param name="imu0" value="/sensor/imu" />
+        <param name="imu0_differential" value="false" />
+        <param name="imu0_queue_size" value="1000" />
+        <param name="imu0_remove_gravitational_acceleration" value="false" />
+        <param name="imu0_linear_acceleration_rejection_threshold" value="0.005" />
+        <rosparam param="imu0_config">[false, false, false,
+                                   true, true, true,
+                                   false, false, false,
+                                   true, true, true,
+                                   true, true, true]</rosparam>
+        <param name="odom0" value="/sensor/odom" />
+        <param name="odom0_differential" value="false" />
+        <param name="odom0_queue_size" value="1000" />
+        <rosparam param="odom0_config">[true, true, true,
+                                   false, false, false,
+                                   true, true, true,
+                                   false, false, false,
+                                   false, false, false]</rosparam>
+    </node>
+
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf_map" clear_params="true">
+        <remap from="odometry/filtered" to="odometry/filtered_map"/>
+        <param name="frequency" value="10.0" />
+        <param name="sensor_timeout" value="0.2" />
+        <param name="two_d_mode" value="true" />
+        <param name="publish_tf" value="true" />
+        <param name="map_frame" value="map" />
+        <param name="odom_frame" value="odom" />
+        <param name="base_link_frame" value="base_link" />
+        <param name="world_frame" value="map" />
+
+        <param name="imu0" value="/sensor/imu" />
+        <param name="imu0_differential" value="false" />
+        <param name="imu0_queue_size" value="1000" />
+        <param name="imu0_remove_gravitational_acceleration" value="false" />
+        <param name="imu0_linear_acceleration_rejection_threshold" value="0.005" />
+        <rosparam param="imu0_config">[false, false, false,
+                                   true, true, true,
+                                   false, false, false,
+                                   true, true, true,
+                                   true, true, true]</rosparam>
+        <param name="odom0" value="/sensor/odom" />
+        <param name="odom0_differential" value="false" />
+        <param name="odom0_queue_size" value="1000" />
+        <rosparam param="odom0_config">[true, true, true,
+                                   false, false, false,
+                                   true, true, true,
+                                   false, false, false,
+                                   false, false, false]</rosparam>
+    </node>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find augv_navigation)/resources/maps/map.yaml"/>
+
+    <!-- move_base -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find augv_navigation)/params/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/move_base_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/dwa_local_planner_params.yaml" command="load" />
+        <remap from="cmd_vel" to="/mobile_base_controller/cmd_vel"/>
+        <remap from="odom" to="/odometry/filtered_map"/>
+    </node>
+
+    <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_navigation)/rviz/rviz_nav.rviz"/>
+
+
+
+</launch>

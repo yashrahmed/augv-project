@@ -7,7 +7,7 @@
 AccelStepper leftStepper = AccelStepper(AccelStepper::FULL4WIRE, 10, 11, 12, 13);
 AccelStepper rightStepper = AccelStepper(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
 
-const float left_wheel_scale_factor = 1.0023;
+const float left_wheel_scale_factor = 1.0;
 const float max_motor_speed = 5000;
 const float motor_steps_per_rotation = 2048; // @TODO - have a multiplier for differing valuefor left and right wheel.
 float left_step_speed = 0, left_ros_speed = 0, right_step_speed = 0, right_ros_speed = 0, left_ros_angle = 0, right_ros_angle = 0;
