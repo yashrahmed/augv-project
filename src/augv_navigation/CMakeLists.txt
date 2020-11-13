@@ -206,6 +206,6 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-catkin_install_python(PROGRAMS scripts/custom-motion-planner.py
+catkin_install_python(PROGRAMS scripts/local-drive-planner.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
