@@ -14,9 +14,11 @@ ODOM_INPUT_TOPIC = '/sensor/odom'
 OUTPUT_TOPIC = '/mobile_base_controller/cmd_vel'
 DEFAULT_THETA_Z_TOLERANCE = 0.005
 DEFAULT_POS_TOLERANCE = 0.01
+DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD = 0.044
 
 set_point = {
-    'az': pi / 2,
+    # 'az': pi / 2,
+    'az': 0.0,
     'dist': 0.5,
     'y': 0.0
 }
@@ -34,10 +36,11 @@ def create_and_run_plan(publisher, tgt_state, pos_tolerance, angle_tolerance):
     az_diff = tgt_state['az'] - current_state['az']
     pos_diff = set_point['dist'] - current_state['dist']
     print(pos_diff)
-    if abs(az_diff) >= angle_tolerance:
+    if abs(az_diff) >= DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD:
         out_msg.angular.z = az_diff
-    elif pos_diff >= pos_tolerance:
-        out_msg.linear.x = pos_diff
+    else:
+        out_msg.linear.x = pos_diff if abs(pos_diff) >= pos_tolerance else 0.0
+        out_msg.angular.z = az_diff if abs(az_diff) >= angle_tolerance else 0.0
     publisher.publish(out_msg)
 
 
