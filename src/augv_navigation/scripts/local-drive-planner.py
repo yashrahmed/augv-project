@@ -173,7 +173,6 @@ def update_odom_state(odom_message):
 
 
 def update_set_point(command):
-    print(command)
     try:
         cmd_values = [float(v) for v in command.data.split(",")]
         set_point['az'], set_point['dist'] = cmd_values
