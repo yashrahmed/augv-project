@@ -54,10 +54,7 @@ def create_and_run_plan(publisher, tgt_state, pos_tolerance, angle_tolerance):
 
 def compute_turn(a1, a2):
     diff = a1 - a2
-    delta_z = normalize_angle(diff)
-    direction = 1 if delta_z < pi else -1
-    return direction * abs(denormalize_angle(diff))
-
+    return denormalize_angle(diff)
 
 def denormalize_angle(a):
     return a if a <= pi else a - 2*pi
