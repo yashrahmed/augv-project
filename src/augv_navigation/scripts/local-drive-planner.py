@@ -47,6 +47,7 @@ set_point = {
 }
 
 current_state = {
+    'reached_goal': True,
     'az': 0.0,
     'x': 0.0,
     'y': 0.0,
@@ -80,7 +81,9 @@ def execute_drive_command(cmd_publisher, status_publisher, odom_output_publisher
     if abs(pos_diff) <= pos_tolerance and abs(az_diff) <= angle_tolerance:
         current_state['dist'] = 0.0
         set_point['dist'] = 0.0
-        status_publisher.publish(GOAL_STATUS_SUCCESS_MESSAGE)
+        if not current_state['reached_goal']:
+            status_publisher.publish(GOAL_STATUS_SUCCESS_MESSAGE)
+            current_state['reached_goal'] = True
 
     cmd_publisher.publish(out_msg)
     odom_output_publisher.publish(compute_odometry_from_current_state())
@@ -175,6 +178,7 @@ def update_set_point(command):
         cmd_values = [float(v) for v in command.data.split(",")]
         set_point['az'], set_point['dist'] = cmd_values
         set_point['az'] = denormalize_angle(set_point['az'])
+        current_state['reached_goal'] = False
         rospy.loginfo(f"Updated set point to {set_point}")
     except Exception as ex:
         rospy.logerr(f"Received illegal command {command} exception={ex}")
@@ -183,7 +187,6 @@ def update_set_point(command):
 def start_node():
     rospy.init_node('custom_local_planner', anonymous=True)
     init_timestamps()
-    print(current_state)
     # imu_input_topic = rospy.get_param(
     #     f'{rospy.get_name()}/imu_input_topic', IMU_INPUT_TOPIC)
     # odom_input_topic = rospy.get_param(
