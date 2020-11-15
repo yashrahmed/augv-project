@@ -4,7 +4,8 @@ import time
 from math import cos, pi, pow, sin, sqrt
 
 import rospy
-from geometry_msgs.msg import Pose, PoseWithCovariance, Twist, TwistWithCovariance
+from geometry_msgs.msg import (Pose, PoseWithCovariance, Twist,
+                               TwistWithCovariance)
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
 from std_msgs.msg import String
