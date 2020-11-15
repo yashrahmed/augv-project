@@ -56,8 +56,12 @@ def execute_drive_command(cmd_publisher, status_publisher,
 
 
 def compute_turn(a1, a2):
-    diff = a1 - a2
-    return denormalize_angle(diff)
+    diff = normalize_angle(a1) - normalize_angle(a2)
+    diff_sign = -1 if diff < 0 else 1
+    alt_diff = (2 * pi) - abs(diff)
+    if alt_diff < abs(diff):
+        diff = (diff_sign * -1) * alt_diff
+    return diff
 
 
 def denormalize_angle(a):
