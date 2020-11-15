@@ -6,6 +6,15 @@
         <param name="frame_id" value="base_link" />
     </node>
 
+    <node pkg="augv_localization" type="integrated_odom_sensor_node.py" name="integrated_odom_sensor_node" clear_params="true" output="screen">
+        <param name="imu_input_topic" value="/sensor/imu"/>
+        <param name="odom_input_topic" value="/sensor/odom"/>
+        <param name="odom_output_topic" value="/odometry/raw"/>
+        <param name="angle_dist_output_topic" value="/sensor/angle_and_dist"/>
+        <param name="base_frame_id" value="base_link" />
+        <param name="odom_frame_id" value="odom" />
+    </node>
+
     <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf_base" clear_params="true">
         <param name="frequency" value="20.0" />
         <param name="sensor_timeout" value="0.2" />

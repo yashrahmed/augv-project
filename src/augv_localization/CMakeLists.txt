@@ -209,6 +209,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_install_python(PROGRAMS scripts/imu_sensor_node.py
+catkin_install_python(PROGRAMS scripts/imu_sensor_node.py scripts/integrated_odom_sensor_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
