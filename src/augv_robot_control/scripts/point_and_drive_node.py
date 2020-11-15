@@ -8,7 +8,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from tf_conversions import transformations as txms
 
-CMD_VEL_TOPIC = '/mobile_base_controller/cmd_vel'
+CMD_VEL_OUTPUT_TOPIC = '/mobile_base_controller/cmd_vel'
 ANGLE_AND_DIST_INPUT_TOPIC = '/sensor/angle_and_dist'
 STATUS_OUTPUT_TOPIC = '/drive_status'
 COMMAND_TOPIC = '/set_point'
@@ -98,25 +98,21 @@ def update_set_point(command):
 def start_node():
     rospy.init_node('custom_local_planner', anonymous=True)
     init_timestamps()
-    # imu_input_topic = rospy.get_param(
-    #     f'{rospy.get_name()}/imu_input_topic', IMU_INPUT_TOPIC)
-    # odom_input_topic = rospy.get_param(
-    #     f'{rospy.get_name()}/odom_input_topic', ODOM_INPUT_TOPIC)
-    # output_topic = rospy.get_param(
-    #     f'{rospy.get_name()}/output_topic', OUTPUT_TOPIC)
-    # theta_z_tolerance = rospy.get_param(
-    #     f'{rospy.get_name()}/theta_z_tolerance', DEFAULT_THETA_Z_TOLERANCE)
-    # xy_tolerance = rospy.get_param(
-    #     f'{rospy.get_name()}/xy_tolerance', DEFAULT_POS_TOLERANCE)
-    cmd_vel_topic = CMD_VEL_TOPIC
-    command_topic = COMMAND_TOPIC
-    status_output_topic = STATUS_OUTPUT_TOPIC
-    angle_and_dist_state_topic = ANGLE_AND_DIST_INPUT_TOPIC
+    cmd_vel_output_topic = rospy.get_param(
+        f'{rospy.get_name()}/cmd_vel_output_topic', CMD_VEL_OUTPUT_TOPIC)
+    command_topic = rospy.get_param(
+        f'{rospy.get_name()}/command_topic', COMMAND_TOPIC)
+    status_output_topic = rospy.get_param(
+        f'{rospy.get_name()}/status_output_topic', STATUS_OUTPUT_TOPIC)
+    angle_and_dist_state_topic = rospy.get_param(
+        f'{rospy.get_name()}/angle_and_dist_state_topic', ANGLE_AND_DIST_INPUT_TOPIC)
+    theta_z_tolerance = rospy.get_param(
+        f'{rospy.get_name()}/theta_z_tolerance', DEFAULT_THETA_Z_TOLERANCE)
+    xy_tolerance = rospy.get_param(
+        f'{rospy.get_name()}/xy_tolerance', DEFAULT_POS_TOLERANCE)
 
-    theta_z_tolerance = DEFAULT_THETA_Z_TOLERANCE
-    xy_tolerance = DEFAULT_POS_TOLERANCE
-
-    cmd_vel_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=1000)
+    cmd_vel_publisher = rospy.Publisher(
+        cmd_vel_output_topic, Twist, queue_size=1000)
     status_publisher = rospy.Publisher(
         status_output_topic, String, queue_size=10)
     rospy.Subscriber(command_topic, String,

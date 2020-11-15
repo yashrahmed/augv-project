@@ -12,7 +12,6 @@
     <!-- mobile_base_controller-->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller"/>
 
-
     <node pkg="augv_robot_control" type="robot_driver_node.py" name="driver_node" clear_params="true" output="screen">
         <param name="gps_output_topic" value="/raw/gps" />
         <param name="imu_output_topic" value="/raw/imu" />
@@ -20,4 +19,10 @@
         <param name="motor_cmd_input_topic" value="/cmd/motor"/>
     </node>
 
+    <node pkg="augv_robot_control" type="point_and_drive_node.py" name="point_and_drive_node" clear_params="true" output="screen">
+        <param name="cmd_vel_output_topic" value="/mobile_base_controller/cmd_vel"/>
+        <param name="command_topic" value="/set_point"/>
+        <param name="status_output_topic" value="/drive_status"/>
+        <param name="angle_and_dist_state_topic" value="/sensor/angle_and_dist"/>
+    </node>
 </launch>
