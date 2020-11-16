@@ -3,7 +3,7 @@ from nav_msgs.msg import Odometry
 from math import atan2, pow, sqrt
 import rospy
 
-DEFAULT_ODOM_INPUT_TOPIC = '/odometry/raw'
+DEFAULT_ODOM_INPUT_TOPIC = '/odometry/filtered_map'
 DEFAULT_DRIVE_STATUS_INPUT_TOPIC = '/drive_status'
 DEFAULT_MOVE_CMD_OUTPUT_TOPIC = '/set_point'
 TARGET_WP_IDX_KEY = 'waypoint_idx'
@@ -25,9 +25,6 @@ def send_movement_cmd(cmd_publisher):
         dist = sqrt(pow(x_curr - x_tgt, 2) + pow(y_curr - y_tgt, 2))
         angle = atan2(y_tgt - y_curr, x_tgt - x_curr)
         current_state['goal_set'] = True
-        print(current_state)
-        print(f'{angle},{dist}')
-        print('__________')
         cmd_publisher.publish(f'{angle},{dist}')
 
 

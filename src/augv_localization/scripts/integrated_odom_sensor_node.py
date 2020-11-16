@@ -111,7 +111,7 @@ def update_imu_state(imu_message):
     current_state['odom']['wz'] = delta_z / delta_t
     current_state['last_angle_update_time'] = current_timestamp
 
-
+# ODOM is computed incorrectly if the vehicle is in reverse!!!!
 def update_odom_state(odom_message):
     current_timestamp = rospy.Time.now()
     delta_t = (current_timestamp -

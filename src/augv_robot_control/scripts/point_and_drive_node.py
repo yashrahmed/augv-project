@@ -40,7 +40,7 @@ def execute_drive_command(cmd_publisher, status_publisher,
     if abs(az_diff) >= DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD:
         out_msg.angular.z = az_diff
     else:
-        out_msg.linear.x = pos_diff if abs(pos_diff) >= pos_tolerance else 0.0
+        out_msg.linear.x = pos_diff if abs(pos_diff) >= pos_tolerance and pos_diff > 0.0 else 0.0 # prevent reverse driving
         out_msg.angular.z = az_diff if abs(az_diff) >= angle_tolerance else 0.0
 
     # Check if goal reached and then reset dist
@@ -94,6 +94,7 @@ def update_set_point(command):
         set_point['az'], set_point['dist'] = cmd_values
         set_point['az'] = denormalize_angle(set_point['az'])
         current_state['reached_goal'] = False
+        current_state['dist'] =  0.0
         rospy.loginfo(f"Updated set point to {set_point}")
     except Exception as ex:
         rospy.logerr(f"Received illegal command {command} exception={ex}")
