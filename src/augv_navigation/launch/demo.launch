@@ -1,20 +1,9 @@
 <launch>
-
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find augv_navigation)/resources/maps/map.yaml"/>
-
-    <!-- move_base -->
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
-        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
-        <rosparam file="$(find augv_navigation)/params/local_costmap_params.yaml" command="load" />
-        <rosparam file="$(find augv_navigation)/params/global_costmap_params.yaml" command="load" />
-        <rosparam file="$(find augv_navigation)/params/move_base_params.yaml" command="load" />
-        <rosparam file="$(find augv_navigation)/params/dwa_local_planner_params.yaml" command="load" />
-        <remap from="cmd_vel" to="/mobile_base_controller/cmd_vel"/>
-        <remap from="odom" to="/odometry/filtered"/>
+    <node pkg="augv_navigation" type="waypoint_navigator.py" name="waypoint_nav_node" clear_params="true" output="screen">
+        <param name="odom_input_topic" value="/odometry/filtered_map"/>
+        <param name="drive_status_input_topic" value="/drive_status"/>
+        <param name="move_cmd_output_topic" value="/set_point"/>
+        <param name="waypoints_upload_topic" value="/way_points_upload"/>
     </node>
-
-    <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_navigation)/rviz/rviz_nav.rviz"/>
 
 </launch>
