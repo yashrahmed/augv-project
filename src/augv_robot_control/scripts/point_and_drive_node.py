@@ -8,10 +8,10 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from tf_conversions import transformations as txms
 
-CMD_VEL_OUTPUT_TOPIC = '/mobile_base_controller/cmd_vel'
-ANGLE_AND_DIST_INPUT_TOPIC = '/sensor/angle_and_dist'
-STATUS_OUTPUT_TOPIC = '/drive_status'
-COMMAND_TOPIC = '/set_point'
+CMD_VEL_OUTPUT_TOPIC = '/my/mobile_base_controller/cmd_vel'
+ANGLE_AND_DIST_INPUT_TOPIC = '/my/sensor/angle_and_dist'
+STATUS_OUTPUT_TOPIC = '/my/drive_status'
+COMMAND_TOPIC = '/my/set_point'
 
 GOAL_STATUS_SUCCESS_MESSAGE = "AT_GOAL"
 
