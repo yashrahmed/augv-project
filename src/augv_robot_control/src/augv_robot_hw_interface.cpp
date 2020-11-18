@@ -72,7 +72,7 @@ public:
         vel[1] = stod(stateValues.at(1).c_str());
         pos[0] = stod(stateValues.at(2).c_str());
         pos[1] = stod(stateValues.at(3).c_str());
-        ROS_INFO("Motor State := [lv=%s rv=%s lp=%s rp=%s]", stateValues.at(0).c_str(), stateValues.at(1).c_str(), stateValues.at(2).c_str(), stateValues.at(3).c_str());
+        //ROS_INFO("Motor State := [lv=%s rv=%s lp=%s rp=%s]", stateValues.at(0).c_str(), stateValues.at(1).c_str(), stateValues.at(2).c_str(), stateValues.at(3).c_str());
     }
 
     void setCmdPublisher(ros::Publisher *publisher)

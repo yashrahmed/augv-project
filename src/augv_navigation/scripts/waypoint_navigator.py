@@ -48,6 +48,7 @@ def update_waypoints(msg):
         waypoints.extend(wp_path)
         current_state[TARGET_WP_IDX_KEY] = 0
         current_state['goal_set'] = False
+        rospy.loginfo(f"Waypoint mission => {wp_path}")
     except Exception as e:
         rospy.logerr(f"waypoint mission upload failed message={msg} exception={e}")
 

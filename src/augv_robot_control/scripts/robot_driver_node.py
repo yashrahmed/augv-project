@@ -34,7 +34,7 @@ def route_serial_data(conn, imu_pub, gps_pub, mot_pub):
 
 def send_cmd_to_robot(message, args):
     serial_conn = args
-    rospy.loginfo(f'robot_driver_node received cmd {message.data.encode()}')
+    #rospy.loginfo(f'robot_driver_node received cmd {message.data.encode()}')
     serial_conn.write(f'{message.data}\n'.encode())
 
 
