@@ -2,9 +2,13 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
 
 #define IMU_I2C_ADD (0x28)
 #define SLAVE_CTRL_I2C_ADD (0x04)
+
+// STEPPER MOTOR SETUP -------------
 
 union {
   float val;
@@ -45,6 +49,8 @@ void print_motor_state() {
   }
   Serial.println(motor_state[3], 3); // print last state value
 }
+
+// IMU SETUP -------------
 
 #define BNO055_SAMPLERATE_DELAY_MS (50)          // Delay between data requests
 
@@ -104,9 +110,29 @@ void print_imu_data() {
   Serial.println();
 }
 
+// GPS SETUP -------------
+
+const int RXPin = 4, TXPin = 3;
+const int GPS_BAUD_RATE = 9600;
+
+TinyGPSPlus gps;
+SoftwareSerial gpsSerial(RXPin, TXPin);
+
+void print_gps_data() {
+  // message format is [GPS lat lon alt hdop course]
+  if (gps.location.isValid() && gps.altitude.isValid() && gps.hdop.isValid() && gps.location.isUpdated()) {
+    Serial.print("GPS ");
+    Serial.print(gps.location.lat(), 8); Serial.print(" ");
+    Serial.print(gps.location.lng(), 8); Serial.print(" ");
+    Serial.print(gps.altitude.meters(), 8); Serial.print(" ");
+    Serial.print(gps.hdop.hdop(), 8); Serial.print(" ");
+    Serial.print(gps.course.deg(), 8); Serial.println();
+  }
+}
 
 void setup() {
   // put your setup code here, to run once:
+  gpsSerial.begin(GPS_BAUD_RATE);
   Serial.begin(9600);
   Wire.begin();
   if (!bno.begin())                               // Initialize sensor communication
@@ -130,7 +156,12 @@ void loop() {
     send_motor_cmd_to_slave(left_speed, right_speed);
   }
 
+  while (gpsSerial.available() > 0) {
+    gps.encode(gpsSerial.read());
+  }
+
   print_motor_state();
   print_imu_data();
+  print_gps_data();
   delay(100);
 }
