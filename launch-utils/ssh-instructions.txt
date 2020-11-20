@@ -1,0 +1,19 @@
+APPROACH #1 - This was abandoned as it was too slow and almost non responsive.
+
+1. ssh into robot using
+
+    ssh pi@]ip-address]
+
+2. Enter password
+
+3. cd Documents/simple-augv-01/
+
+4. launch nodes using
+
+    screen -dmS on-board-nodes "$(pwd)/launch-utils/on-board-launcher.sh"
+
+5. Confirm running process using
+
+    screen -ls
+ 
+

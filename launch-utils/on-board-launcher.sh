@@ -1,4 +1,5 @@
 #!/bin/bash
+cd ~/Documents/simple-augv-01
 IP_ADD=$(python3 ./launch-utils/get-ip.py)
 echo "ROBOT IP ${IP_ADD}"
 export ROS_MASTER_URI=http://${IP_ADD}:11311
