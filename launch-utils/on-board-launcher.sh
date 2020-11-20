@@ -7,4 +7,4 @@ export ROS_HOSTNAME="${IP_ADD}"
 export ROS_IP="${IP_ADD}"
 
 source ./devel/setup.sh
-python3 ./launch-utils/launch-nodes.py
+roslaunch augv_main on-robot.launch
