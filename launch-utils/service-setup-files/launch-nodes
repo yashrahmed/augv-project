@@ -7,7 +7,7 @@
 
 source ~/Documents/simple-augv-01/devel/setup.sh
 source /etc/ros/env.sh
-export ROS_HOME=$(echo pi)/.ros
-roslaunch augv_main on-robot.launch
+export ROS_HOME=$(echo $HOME)/.ros
+roslaunch augv_main on-robot.launch &
 PID=$!
-wait “$PID”
+wait $PID
