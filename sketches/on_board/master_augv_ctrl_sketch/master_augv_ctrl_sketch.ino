@@ -116,7 +116,7 @@ const int RXPin = 4, TXPin = 3;
 const int GPS_BAUD_RATE = 9600;
 
 TinyGPSPlus gps;
-SoftwareSerial gpsSerial(RXPin, TXPin);
+//SoftwareSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
@@ -132,7 +132,7 @@ void print_gps_data() {
 
 void setup() {
   // put your setup code here, to run once:
-  gpsSerial.begin(GPS_BAUD_RATE);
+  //gpsSerial.begin(GPS_BAUD_RATE);
   Serial.begin(9600);
   Wire.begin();
   if (!bno.begin())                               // Initialize sensor communication
@@ -156,12 +156,12 @@ void loop() {
     send_motor_cmd_to_slave(left_speed, right_speed);
   }
 
-  while (gpsSerial.available() > 0) {
-    gps.encode(gpsSerial.read());
-  }
+//  while (gpsSerial.available() > 0) {
+//    gps.encode(gpsSerial.read());
+//  }
 
   print_motor_state();
   print_imu_data();
-  print_gps_data();
+  //print_gps_data();
   delay(100);
 }

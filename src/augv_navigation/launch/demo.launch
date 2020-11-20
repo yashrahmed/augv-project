@@ -1,6 +1,6 @@
 <launch>
     <node pkg="augv_navigation" type="waypoint_navigator.py" name="waypoint_nav_node" clear_params="true" output="screen">
-        <param name="odom_input_topic" value="/odometry/filtered"/>
+        <param name="odom_input_topic" value="/odometry/filtered_map"/>
         <param name="drive_status_input_topic" value="/drive_status"/>
         <param name="move_cmd_output_topic" value="/set_point"/>
         <param name="waypoints_upload_topic" value="/way_points_upload"/>
