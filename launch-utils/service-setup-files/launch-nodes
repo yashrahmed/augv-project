@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+# Taken from https://blog.roverrobotics.com/how-to-run-ros-on-startup-bootup/
+# Copy this file to /usr/sbin/launch-nodes
+
+
+source ~/Documents/simple-augv-01/devel/setup.sh
+source /etc/ros/env.sh
+export ROS_HOME=$(echo pi)/.ros
+roslaunch augv_main on-robot.launch
+PID=$!
+wait “$PID”

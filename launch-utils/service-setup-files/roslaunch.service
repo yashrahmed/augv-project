@@ -1,0 +1,13 @@
+# Taken from https://blog.roverrobotics.com/how-to-run-ros-on-startup-bootup/
+# Copy this file to /etc/systemd/system/roslaunch.service
+
+[Unit]
+Requires=roscore.service
+PartOf=roscore.service
+After=NetworkManager.service time-sync.target roscore.service
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/sbin/launch-nodes
+[Install]
+WantedBy=multi-user.target
