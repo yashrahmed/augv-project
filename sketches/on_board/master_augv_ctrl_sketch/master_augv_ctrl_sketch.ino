@@ -116,7 +116,7 @@ const int RXPin = 4, TXPin = 3;
 const int GPS_BAUD_RATE = 9600;
 
 TinyGPSPlus gps;
-//SoftwareSerial gpsSerial(RXPin, TXPin);
+SoftwareSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
