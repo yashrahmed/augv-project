@@ -10,6 +10,7 @@
 #define SLAVE_CTRL_I2C_ADD (0x04)
 
 // STEPPER MOTOR SETUP -------------
+#define MOTOR_UPDATE_FREQ_MS (50)
 
 union {
   float val;
@@ -56,7 +57,7 @@ int motor_read_thread(struct pt *pt_handle) {
   PT_BEGIN(pt_handle);
   while (true) {
     print_motor_state();
-    PT_SLEEP(pt_handle, 100);
+    PT_SLEEP(pt_handle, MOTOR_UPDATE_FREQ_MS);
   }
   PT_END(pt_handle);
 }
@@ -66,7 +67,7 @@ pt pt_motor_writer;
 int motor_write_thread(struct pt *pt_handle) {
   PT_BEGIN(pt_handle);
   while (true) {
-    PT_WAIT_UNTIL(pt_handle, Serial.available() && (millis() - last_write_time > 50));
+    PT_WAIT_UNTIL(pt_handle, Serial.available() && ((millis() - last_write_time) > MOTOR_UPDATE_FREQ_MS));
     String cmd = Serial.readStringUntil('\n');
     int idx = cmd.indexOf(",");
     float left_speed = cmd.substring(0, idx).toFloat();
@@ -79,7 +80,7 @@ int motor_write_thread(struct pt *pt_handle) {
 
 // IMU SETUP -------------
 
-#define BNO055_SAMPLERATE_DELAY_MS (50)          // Delay between data requests
+#define BNO055_SAMPLERATE_DELAY_MS (100)          // Delay between data requests
 
 const double DEG_2_RAD = 0.0174533;
 Adafruit_BNO055 bno = Adafruit_BNO055(123, IMU_I2C_ADD);          // Create sensor object bno based on Adafruit_BNO055 library
@@ -142,22 +143,24 @@ int imu_read_thread(struct pt *pt_handle) {
   PT_BEGIN(pt_handle);
   while (true) {
     print_imu_data();
-    PT_SLEEP(pt_handle, 100);
+    PT_SLEEP(pt_handle, BNO055_SAMPLERATE_DELAY_MS);
   }
   PT_END(pt_handle);
 }
 
 // GPS SETUP -------------
+#define GPS_SAMPLE_DELAY_MS (100)
 
 const int RXPin = 4, TXPin = 3;
 const int GPS_BAUD_RATE = 9600;
+long prev_gps_check_time = 0;
 
 TinyGPSPlus gps;
 NeoSWSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
-  if (gps.location.isValid() && gps.altitude.isValid() && gps.hdop.isValid() && gps.location.isUpdated()) {
+  if (gps.location.isValid()&& gps.hdop.isValid() && gps.location.isUpdated()) {
     Serial.print("GPS ");
     Serial.print(gps.location.lat(), 8); Serial.print(" ");
     Serial.print(gps.location.lng(), 8); Serial.print(" ");
@@ -171,7 +174,7 @@ pt pt_gps;
 int gps_read_thread(struct pt *pt_handle) {
   PT_BEGIN(pt_handle);
 
-  while (gpsSerial.available() > 0) {
+  while (gpsSerial.available() > 0 && ((millis() - prev_gps_check_time) > GPS_SAMPLE_DELAY_MS)) {
     gps.encode(gpsSerial.read());
     print_gps_data();
     PT_YIELD(pt_handle);
