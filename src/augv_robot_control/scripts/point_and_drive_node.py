@@ -124,7 +124,7 @@ def start_node():
                      callback=update_set_point)
     rospy.Subscriber(angle_and_dist_state_topic, String,
                      callback=update_state)
-    rospy.Timer(rospy.Duration(0.05),
+    rospy.Timer(rospy.Duration(0.1),
                 callback=lambda _: execute_drive_command(cmd_vel_publisher,
                                                          status_publisher,
                                                          set_point,

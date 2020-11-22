@@ -3,7 +3,8 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 #include <TinyGPS++.h>
-#include <SoftwareSerial.h>
+#include <NeoSWSerial.h>
+#include "protothreads.h"
 
 #define IMU_I2C_ADD (0x28)
 #define SLAVE_CTRL_I2C_ADD (0x04)
@@ -48,6 +49,32 @@ void print_motor_state() {
     Serial.print(",");
   }
   Serial.println(motor_state[3], 3); // print last state value
+}
+
+pt pt_motor_reader;
+int motor_read_thread(struct pt *pt_handle) {
+  PT_BEGIN(pt_handle);
+  while (true) {
+    print_motor_state();
+    PT_SLEEP(pt_handle, 100);
+  }
+  PT_END(pt_handle);
+}
+
+long last_write_time = 0;
+pt pt_motor_writer;
+int motor_write_thread(struct pt *pt_handle) {
+  PT_BEGIN(pt_handle);
+  while (true) {
+    PT_WAIT_UNTIL(pt_handle, Serial.available() && (millis() - last_write_time > 50));
+    String cmd = Serial.readStringUntil('\n');
+    int idx = cmd.indexOf(",");
+    float left_speed = cmd.substring(0, idx).toFloat();
+    float right_speed = cmd.substring(idx + 1, cmd.length()).toFloat();
+    send_motor_cmd_to_slave(left_speed, right_speed);
+    last_write_time = millis();
+  }
+  PT_END(pt_handle);
 }
 
 // IMU SETUP -------------
@@ -110,13 +137,23 @@ void print_imu_data() {
   Serial.println();
 }
 
+pt pt_imu;
+int imu_read_thread(struct pt *pt_handle) {
+  PT_BEGIN(pt_handle);
+  while (true) {
+    print_imu_data();
+    PT_SLEEP(pt_handle, 100);
+  }
+  PT_END(pt_handle);
+}
+
 // GPS SETUP -------------
 
 const int RXPin = 4, TXPin = 3;
 const int GPS_BAUD_RATE = 9600;
 
 TinyGPSPlus gps;
-SoftwareSerial gpsSerial(RXPin, TXPin);
+NeoSWSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
@@ -130,9 +167,20 @@ void print_gps_data() {
   }
 }
 
+pt pt_gps;
+int gps_read_thread(struct pt *pt_handle) {
+  PT_BEGIN(pt_handle);
+
+  while (gpsSerial.available() > 0) {
+    gps.encode(gpsSerial.read());
+    print_gps_data();
+    PT_YIELD(pt_handle);
+  }
+  PT_END(pt_handle);
+}
+
 void setup() {
   // put your setup code here, to run once:
-  //gpsSerial.begin(GPS_BAUD_RATE);
   Serial.begin(9600);
   Wire.begin();
   if (!bno.begin())                               // Initialize sensor communication
@@ -143,25 +191,18 @@ void setup() {
   Serial.println("starting...");
   delay(2000);
   bno.setExtCrystalUse(true);                     // Use the crystal on the development board
+  gpsSerial.begin(GPS_BAUD_RATE);
+  delay(2000);
+  PT_INIT(&pt_gps);
+  PT_INIT(&pt_imu);
+  PT_INIT(&pt_motor_reader);
+  PT_INIT(&pt_motor_writer);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
-  while (Serial.available()) {
-    String cmd = Serial.readStringUntil('\n');
-    int idx = cmd.indexOf(",");
-    float left_speed = cmd.substring(0, idx).toFloat();
-    float right_speed = cmd.substring(idx + 1, cmd.length()).toFloat();
-    send_motor_cmd_to_slave(left_speed, right_speed);
-  }
-
-//  while (gpsSerial.available() > 0) {
-//    gps.encode(gpsSerial.read());
-//  }
-
-  print_motor_state();
-  print_imu_data();
-  //print_gps_data();
-  delay(100);
+  PT_SCHEDULE(gps_read_thread(&pt_gps));
+  PT_SCHEDULE(imu_read_thread(&pt_imu));
+  PT_SCHEDULE(motor_read_thread(&pt_motor_reader));
+  PT_SCHEDULE(motor_write_thread(&pt_motor_writer));
 }
