@@ -75,7 +75,7 @@
     <!--only required for GPS and map to odom publishing-->
     <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf_map" clear_params="true">
         <remap from="odometry/filtered" to="odometry/filtered_map"/>
-        <param name="frequency" value="5.0" />
+        <param name="frequency" value="10.0" />
         <param name="sensor_timeout" value="0.2" />
         <param name="two_d_mode" value="true" />
         <param name="publish_tf" value="true" />
@@ -105,7 +105,7 @@
     </node>
 
     <node pkg="augv_navigation" type="waypoint_navigator.py" name="waypoint_nav_node" clear_params="true" output="screen">
-        <param name="odom_input_topic" value="/odometry/filtered_map"/>
+        <param name="odom_input_topic" value="/odometry/filtered"/>
         <param name="drive_status_input_topic" value="/drive_status"/>
         <param name="move_cmd_output_topic" value="/set_point"/>
         <param name="waypoints_upload_topic" value="/way_points_upload"/>
