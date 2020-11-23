@@ -90,33 +90,33 @@ long prev_imu_tx_time = 0;
 
 void restore_imu_sensor_offsets() {
   /*
-    ON-TABLE?
-    Accelerometer: 5 10 -18
-    Gyro: -2 -1 -1
-    Mag: -734 -4 -847
+    Accelerometer: -26 -9 -24
+    Gyro: -1 -1 -1
+    Mag: -39 -421 -326
     Accel Radius: 1000
-    Mag Radius: 737
+    Mag Radius: 833
+
   */
   bno.setMode(bno.OPERATION_MODE_CONFIG);
   adafruit_bno055_offsets_t calibData;
-  calibData.accel_offset_x = 5;
-  calibData.accel_offset_y = 10;
-  calibData.accel_offset_z = 18;
+  calibData.accel_offset_x = -26;
+  calibData.accel_offset_y = -9;
+  calibData.accel_offset_z = -24;
 
-  calibData.gyro_offset_x = -2;
+  calibData.gyro_offset_x = -1;
   calibData.gyro_offset_y = -1;
   calibData.gyro_offset_z = -1;
 
-  calibData.mag_offset_x = -734;
-  calibData.mag_offset_y = -4;
-  calibData.mag_offset_z = -847;
+  calibData.mag_offset_x = -39;
+  calibData.mag_offset_y = -421;
+  calibData.mag_offset_z = -326;
 
   calibData.accel_radius = 1000;
-  calibData.mag_radius = 737;
+  calibData.mag_radius = 833;
 
   bno.setSensorOffsets(calibData);
-  //bno.setMode(bno.OPERATION_MODE_NDOF);
-  bno.setMode(bno.OPERATION_MODE_IMUPLUS);
+  bno.setMode(bno.OPERATION_MODE_NDOF);
+  //bno.setMode(bno.OPERATION_MODE_IMUPLUS);
 }
 
 void print_imu_data() {
@@ -160,12 +160,12 @@ NeoSWSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
-  if (gps.location.isValid()&& gps.hdop.isValid() && gps.location.isUpdated()) {
-    Serial.print("GPS ");
-    Serial.print(gps.location.lat(), 8); Serial.print(" ");
-    Serial.print(gps.location.lng(), 8); Serial.print(" ");
-    Serial.print(gps.altitude.meters(), 8); Serial.print(" ");
-    Serial.print(gps.hdop.hdop(), 8); Serial.print(" ");
+  if (gps.location.isValid() && gps.hdop.isValid() && gps.location.isUpdated()) {
+    Serial.print("GPS,");
+    Serial.print(gps.location.lat(), 8); Serial.print(",");
+    Serial.print(gps.location.lng(), 8); Serial.print(",");
+    Serial.print(gps.altitude.meters(), 8); Serial.print(",");
+    Serial.print(gps.hdop.hdop(), 8); Serial.print(",");
     Serial.print(gps.course.deg(), 8); Serial.println();
   }
 }
