@@ -160,7 +160,7 @@ NeoSWSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
-  if (gps.location.isValid() && gps.hdop.isValid() && gps.location.isUpdated()) {
+  if (gps.location.isValid() && gps.hdop.isValid() && gps.location.isUpdated() && gps.course.isValid() && gps.altitude.isValid()) {
     Serial.print("GPS,");
     Serial.print(gps.location.lat(), 8); Serial.print(",");
     Serial.print(gps.location.lng(), 8); Serial.print(",");
