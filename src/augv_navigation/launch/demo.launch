@@ -6,7 +6,8 @@
         <param name="waypoints_upload_topic" value="/way_points_upload"/>
         <param name="gps_mode_enabled" value="true"/>
         <param name="gps_input_topic" value="/sensor/gps"/>
-         <param name="magnetic_declination_radians" value="-0.06352998" />
+        <param name="magnetic_declination_radians" value="-0.06352998" />
+        <param name="safety_on" value="True"/>
     </node>
 
 </launch>

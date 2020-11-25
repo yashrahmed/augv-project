@@ -15,6 +15,8 @@ DEFAULT_WAYPOINTS_UPLOAD_INPUT_TOPIC = '/my/way_points_upload'
 DEFAULT_MOVE_CMD_OUTPUT_TOPIC = '/my/set_point'
 DEFAULT_GPS_MODE_ENABLED = 'false'
 DEFAULT_MAG_DECL_RADIANS = 0.0
+DEFAULT_SAFETY_FLAG_VALUE = False
+MAX_DIST_IN_SAFETY_MODE_METERS = 1
 
 TARGET_WP_IDX_KEY = 'waypoint_idx'
 
@@ -47,7 +49,7 @@ def calc_angle_dist_gps(decl_angle):
     if x_curr == -1:
         raise Exception("GPS not available")
     bearing, dist = calc_geo_disp((x_curr, y_curr), (x_tgt, y_tgt), decl_angle)
-    return bearing, min(dist, 1)  # @TODO - remove min later
+    return bearing, dist
 
 
 def calc_geo_disp(pointA, pointB, decl_angle):
@@ -105,12 +107,13 @@ def calc_geo_disp(pointA, pointB, decl_angle):
     return atan2(x_wrt_n, y_wrt_n), dist
 
 
-def send_movement_cmd(cmd_publisher, gps_mode_enabled, decl_angle):
+def send_movement_cmd(cmd_publisher, gps_mode_enabled, decl_angle, safety_on):
     try:
         if current_state[TARGET_WP_IDX_KEY] < len(waypoints) and not current_state['goal_set']:
             angle, dist = calc_angle_dist_gps(
                 decl_angle) if gps_mode_enabled else calc_angle_dist()
             current_state['goal_set'] = True
+            dist = min(dist, MAX_DIST_IN_SAFETY_MODE_METERS) if safety_on else dist
             cmd_publisher.publish(f'{angle},{dist}')
     except Exception as e:
         rospy.logerr(f'Failed to send movement command ex={e}')
@@ -164,6 +167,8 @@ def start_node():
         f'{rospy.get_name()}/gps_input_topic', DEFAULT_GPS_INPUT_TOPIC)
     magnetic_declination_radians = rospy.get_param(
         f'{rospy.get_name()}/magnetic_declination_radians', DEFAULT_MAG_DECL_RADIANS)
+    safety_on = str(rospy.get_param(
+        f'{rospy.get_name()}/safety_on', DEFAULT_SAFETY_FLAG_VALUE)) == 'True'
 
     rospy.loginfo(f"GPS Mode is set to {gps_mode_enabled}")
 
@@ -176,7 +181,7 @@ def start_node():
                      callback=update_goal_state)
     rospy.Subscriber(gps_input_topic, NavSatFix, callback=update_gps_position)
     rospy.Timer(rospy.Duration(
-        1), callback=lambda _: send_movement_cmd(cmd_publisher, gps_mode_enabled, magnetic_declination_radians))
+        1), callback=lambda _: send_movement_cmd(cmd_publisher, gps_mode_enabled, magnetic_declination_radians, safety_on))
 
     rospy.spin()
 
