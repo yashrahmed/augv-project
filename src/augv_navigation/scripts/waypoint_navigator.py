@@ -134,15 +134,10 @@ def update_gps_position(msg):
     current_state['gps']['lon'] = msg.longitude
 
 
-def update_waypoints(msg, args):
-    gps_mode_enabled = args
+def update_waypoints(msg):
     try:
         wp_path = json.loads(msg.data)
         waypoints.clear()
-        if gps_mode_enabled:
-            # @ToDo enable GPS transformation here of waypoints here......
-            pass
-
         waypoints.extend(wp_path)
         current_state[TARGET_WP_IDX_KEY] = 0
         current_state['goal_set'] = False
@@ -176,7 +171,7 @@ def start_node():
         move_cmd_output_topic, String, queue_size=10)
     rospy.Subscriber(odom_input_topic, Odometry, callback=update_odom_state)
     rospy.Subscriber(waypoints_upload_topic, String,
-                     callback=update_waypoints, callback_args=(gps_mode_enabled))
+                     callback=update_waypoints)
     rospy.Subscriber(drive_status_input_topic, String,
                      callback=update_goal_state)
     rospy.Subscriber(gps_input_topic, NavSatFix, callback=update_gps_position)
