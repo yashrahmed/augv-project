@@ -114,8 +114,8 @@ void restore_imu_sensor_offsets() {
   calibData.mag_radius = 617;
 
   bno.setSensorOffsets(calibData);
-  bno.setMode(bno.OPERATION_MODE_NDOF);
-  //bno.setMode(bno.OPERATION_MODE_IMUPLUS);
+  //bno.setMode(bno.OPERATION_MODE_NDOF);
+  bno.setMode(bno.OPERATION_MODE_IMUPLUS);
 }
 
 void print_imu_data() {
