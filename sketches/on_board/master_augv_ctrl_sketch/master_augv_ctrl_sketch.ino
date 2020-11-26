@@ -90,29 +90,28 @@ long prev_imu_tx_time = 0;
 
 void restore_imu_sensor_offsets() {
   /*
-    Accelerometer: -26 -9 -24
-    Gyro: -1 -1 -1
-    Mag: -39 -421 -326
+    Accelerometer: -23 -29 -28
+    Gyro: -2 -3 0
+    Mag: 134 -728 -953
     Accel Radius: 1000
-    Mag Radius: 833
-
+    Mag Radius: 617
   */
   bno.setMode(bno.OPERATION_MODE_CONFIG);
   adafruit_bno055_offsets_t calibData;
-  calibData.accel_offset_x = -26;
-  calibData.accel_offset_y = -9;
-  calibData.accel_offset_z = -24;
+  calibData.accel_offset_x = -23;
+  calibData.accel_offset_y = -29;
+  calibData.accel_offset_z = -28;
 
-  calibData.gyro_offset_x = -1;
-  calibData.gyro_offset_y = -1;
-  calibData.gyro_offset_z = -1;
+  calibData.gyro_offset_x = -2;
+  calibData.gyro_offset_y = -3;
+  calibData.gyro_offset_z = 0;
 
-  calibData.mag_offset_x = -39;
-  calibData.mag_offset_y = -421;
-  calibData.mag_offset_z = -326;
+  calibData.mag_offset_x = 134;
+  calibData.mag_offset_y = -728;
+  calibData.mag_offset_z = -953;
 
   calibData.accel_radius = 1000;
-  calibData.mag_radius = 833;
+  calibData.mag_radius = 617;
 
   bno.setSensorOffsets(calibData);
   bno.setMode(bno.OPERATION_MODE_NDOF);
@@ -160,7 +159,7 @@ NeoSWSerial gpsSerial(RXPin, TXPin);
 
 void print_gps_data() {
   // message format is [GPS lat lon alt hdop course]
-  if (gps.location.isValid() && gps.hdop.isValid() && gps.location.isUpdated()) {
+  if (gps.location.isValid() && gps.hdop.isValid() && gps.location.isUpdated() && gps.course.isValid() && gps.altitude.isValid()) {
     Serial.print("GPS,");
     Serial.print(gps.location.lat(), 8); Serial.print(",");
     Serial.print(gps.location.lng(), 8); Serial.print(",");

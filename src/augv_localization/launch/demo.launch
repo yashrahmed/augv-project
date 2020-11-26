@@ -6,6 +6,12 @@
         <param name="frame_id" value="base_link" />
     </node>
 
+    <node pkg="augv_localization" type="gps_sensor_node.py" name="gps_sensor_node" clear_params="true" output="screen">
+        <param name="input_topic" value="/raw/gps" />
+        <param name="output_topic" value="/sensor/gps" />
+        <param name="frame_id" value="map" />
+    </node>
+
     <node pkg="augv_localization" type="integrated_odom_sensor_node.py" name="integrated_odom_sensor_node" clear_params="true" output="screen">
         <param name="imu_input_topic" value="/sensor/imu"/>
         <param name="odom_input_topic" value="/sensor/odom"/>
@@ -48,8 +54,8 @@
 
     <!--only required for GPS and map to odom publishing-->
     <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf_map" clear_params="true">
-        <remap from="odometry/filtered" to="odometry/filtered_map"/>
-        <param name="frequency" value="5.0" />
+        <remap from="/odometry/filtered" to="/odometry/filtered_map"/>
+        <param name="frequency" value="10.0" />
         <param name="sensor_timeout" value="0.2" />
         <param name="two_d_mode" value="true" />
         <param name="publish_tf" value="true" />
@@ -76,7 +82,31 @@
                                    true, true, true,
                                    false, false, false,
                                    false, false, false]</rosparam>
+        <!-- <param name="odom1" value="/odometry/gps" />
+         <param name="odom1_queue_size" value="1000" />
+        <rosparam param="odom1_config">[true,  true,  false,
+                                false, false, false,
+                                false, false, false,
+                                false, false, false,
+                                false, false, false]</rosparam>
+        <param name="odom1_differential" value="false" /> -->
     </node>
+
+    <!-- <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
+        <remap from="/odometry/filtered" to="/odometry/filtered_map" />
+        <remap from="/imu/data" to="/sensor/imu" />
+        <remap from="/gps/fix" to="/sensor/gps" />
+        <param name="frequency" value="10.0" />
+        <param name="magnetic_declination_radians" value="-0.06352998" />
+        <param name="transform_timeout" value="0.2"/>
+        <param name="wait_for_datum" value="true"/>
+        <param name="yaw_offset" value="0" />
+        <param name="publish_filtered_gps" value="true"/>
+        <param name="broadcast_utm_transform" value="true"/>
+        <param name="use_odometry_yaw" value="false"/>
+        <param name="delay" value="20"/>
+    </node> -->
+
 
     <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_localization)/rviz/rviz_imu_vehicle.rviz"/>
 
