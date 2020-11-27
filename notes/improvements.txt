@@ -1,0 +1,3 @@
+1. Add move base planner support for point and drive technique.
+2. Camera based global positioning.
+3. Odometry using optical flow.

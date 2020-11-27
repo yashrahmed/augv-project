@@ -1,0 +1,16 @@
+rostopic pub --once /mobile_base_controller/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.06, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
+
+rostopic pub --once /move_base_simple/goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 1.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}'
+
+rostopic pub --once /way_points_upload std_msgs/String '{data: "[[0.5, 0], [0.5, -0.5], [0, -0.5], [0, 0]]"}'
+
+rostopic pub --once /way_points_upload std_msgs/String '{data: "[[41.783631, -88.187415], [41.783663, -88.187600]]"}'
+
+8th spot from start.....
+
+41.783572, -88.187026
+41.783495, -88.187053
+41.783480, -88.186919
+41.783558, -88.186896
+
+rostopic pub --once /way_points_upload std_msgs/String '{data: "[[41.783572, -88.187026], [41.783495, -88.187053], [41.783480, -88.186919], [41.783558, -88.186896]]"}'
