@@ -1,0 +1,7 @@
+<library path="lib/libpoint_drive_planner">
+    <class name="point_drive_planner/PointDrivePlannerROS" type="point_drive_planner::PointDrivePlannerROS" base_class_type="nav_core::BaseLocalPlanner">
+        <description>
+			Point Drive local planner plugin xml
+        </description>
+    </class>
+</library>
