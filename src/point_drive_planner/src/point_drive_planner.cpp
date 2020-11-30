@@ -13,7 +13,7 @@ namespace point_drive_planner
 
   PointDrivePlannerROS::PointDrivePlannerROS() : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false) {}
 
-  PointDrivePlannerROS::PointDrivePlannerROS(std::string name, tf2_ros::Buffer *tf_buffer , costmap_2d::Costmap2DROS *costmap_ros)
+  PointDrivePlannerROS::PointDrivePlannerROS(std::string name, tf2_ros::Buffer *tf_buffer, costmap_2d::Costmap2DROS *costmap_ros)
       : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false)
   {
     // initialize planner
@@ -48,12 +48,11 @@ namespace point_drive_planner
       points.color.g = 1.0f;
       points.color.a = 1.0;
 
-      
       // set initialized flag
       initialized_ = true;
 
       // this is only here to make this process visible in the rxlogger right from the start
-      ROS_DEBUG("Simple Local Planner plugin initialized.");
+      ROS_INFO("Simple Local Planner plugin initialized.");
     }
     else
     {
@@ -71,13 +70,13 @@ namespace point_drive_planner
       return false;
     }
 
-
-    //set plan, length and next goal
+    //set plan
     plan = orig_global_plan;
 
     // set goal as not reached
     goal_reached_ = false;
 
+    ROS_INFO("Global plan updated.....");
     return true;
   }
 
@@ -90,6 +89,8 @@ namespace point_drive_planner
       ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
       return false;
     }
+
+    ROS_INFO("Computing cmd vel.....");
 
     return true;
   }
