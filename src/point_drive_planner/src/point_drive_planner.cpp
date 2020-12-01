@@ -89,12 +89,13 @@ namespace point_drive_planner
 
     if (this->plan.size() > 2)
     {
-      geometry_msgs::PoseStamped startPose = this->plan.front();
       geometry_msgs::PoseStamped lastPose = this->plan.back();
       // @Todo -- compute turn angle and distance here....
-      ROS_INFO("Computing cmd vel.....");
       ROS_INFO("distance = %s", to_string(this->getDistance(lastPose)).c_str());
       ROS_INFO("turn angle = %s", to_string(this->getTurnAngle(lastPose)).c_str());
+
+
+
     }
     else
     {
@@ -166,19 +167,4 @@ namespace point_drive_planner
   {
     this->current_pose = msg->pose.pose;
   }
-
-  /*
-def compute_turn(a1, a2):
-    diff = normalize_angle(a1) - normalize_angle(a2)
-    diff_sign = -1 if diff < 0 else 1
-    alt_diff = (2 * pi) - abs(diff)
-    if alt_diff < abs(diff):
-        diff = (diff_sign * -1) * alt_diff
-    return diff
-
-
-def normalize_angle(a):
-    return a if a >= 0 else a + 2*pi
-*/
-
 } // namespace point_drive_planner
