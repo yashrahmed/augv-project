@@ -119,6 +119,9 @@ namespace point_drive_planner
       geometry_msgs::Pose current_pose;
 
       static const string ODOM_INPUT_TOPIC;
+      static const double DEFAULT_THETA_Z_TOLERANCE;
+      static const double DEFAULT_POS_TOLERANCE;
+      static const double DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD;
       // Flags
       bool goal_reached_;
       bool initialized_;

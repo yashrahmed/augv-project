@@ -11,6 +11,9 @@ PLUGINLIB_EXPORT_CLASS(point_drive_planner::PointDrivePlannerROS, nav_core::Base
 namespace point_drive_planner
 {
   const string PointDrivePlannerROS::ODOM_INPUT_TOPIC = "odom";
+  const double PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE = 0.005;
+  const double PointDrivePlannerROS::DEFAULT_POS_TOLERANCE = 0.01;
+  const double PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD = 0.044;
 
   PointDrivePlannerROS::PointDrivePlannerROS() : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false) {}
 
@@ -79,6 +82,7 @@ namespace point_drive_planner
 
   bool PointDrivePlannerROS::computeVelocityCommands(geometry_msgs::Twist &cmd_vel)
   {
+    double turn_angle, travel_dist;
 
     // check if plugin initialized
     if (!initialized_)
@@ -90,12 +94,21 @@ namespace point_drive_planner
     if (this->plan.size() > 2)
     {
       geometry_msgs::PoseStamped lastPose = this->plan.back();
-      // @Todo -- compute turn angle and distance here....
-      ROS_INFO("distance = %s", to_string(this->getDistance(lastPose)).c_str());
-      ROS_INFO("turn angle = %s", to_string(this->getTurnAngle(lastPose)).c_str());
+      turn_angle = this->getTurnAngle(lastPose);
+      travel_dist = this->getDistance(lastPose);
+      if (abs(turn_angle) >= PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD)
+      {
+        cmd_vel.angular.z = turn_angle;
+      }
+      else
+      {
+        cmd_vel.angular.z = abs(turn_angle) >= PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE ? turn_angle : 0.0;
+        cmd_vel.linear.x = abs(travel_dist) >= PointDrivePlannerROS::DEFAULT_POS_TOLERANCE && travel_dist > 0.0
+                               ? travel_dist
+                               : 0.0;
+      }
 
-
-
+      goal_reached_ = abs(turn_angle) < PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE && abs(travel_dist) < PointDrivePlannerROS::DEFAULT_POS_TOLERANCE;
     }
     else
     {
