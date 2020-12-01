@@ -46,88 +46,88 @@ using namespace std;
 namespace point_drive_planner
 {
 
-  /**
+   /**
    * @class PointDrivePlannerROS
    * @brief Plugin to the ros base_local_planner. Implements a wrapper for the Elastic Band Method
    */
 
-  class PointDrivePlannerROS : public nav_core::BaseLocalPlanner
-  {
+   class PointDrivePlannerROS : public nav_core::BaseLocalPlanner
+   {
 
-  public:
-    /**
+   public:
+      /**
        * @brief Default constructor for the ros wrapper
        */
-    PointDrivePlannerROS();
+      PointDrivePlannerROS();
 
-    /**
+      /**
        * @brief Constructs the ros wrapper
        * @param name The name to give this instance of the elastic band local planner
        * @param tf A pointer to a transform listener
        * @param costmap The cost map to use for assigning costs to trajectories
        */
-    PointDrivePlannerROS(std::string name, tf2_ros::Buffer *tf_buffer,
-                         costmap_2d::Costmap2DROS *costmap_ros);
+      PointDrivePlannerROS(std::string name, tf2_ros::Buffer *tf_buffer,
+                           costmap_2d::Costmap2DROS *costmap_ros);
 
-    /**
+      /**
        * @brief  Destructor for the wrapper
        */
-    ~PointDrivePlannerROS();
+      ~PointDrivePlannerROS();
 
-    /**
+      /**
        * @brief Initializes the ros wrapper
        * @param name The name to give this instance of the trajectory planner
        * @param tf A pointer to a transform listener
        * @param costmap The cost map to use for assigning costs to trajectories
        */
-    void initialize(std::string name, tf2_ros::Buffer *tf_buffer,
-                    costmap_2d::Costmap2DROS *costmap_ros);
+      void initialize(std::string name, tf2_ros::Buffer *tf_buffer,
+                      costmap_2d::Costmap2DROS *costmap_ros);
 
-    /**
+      /**
        * @brief Set the plan that the controller is following; also reset Simple-planner
        * @param orig_global_plan The plan to pass to the controller
        * @return True if the plan was updated successfully, false otherwise
        */
-    bool setPlan(const std::vector<geometry_msgs::PoseStamped> &orig_global_plan);
+      bool setPlan(const std::vector<geometry_msgs::PoseStamped> &orig_global_plan);
 
-    /**
+      /**
        * @brief Given the current position, orientation, and velocity of the robot, compute velocity commands to send to the base
        * @param cmd_vel Will be filled with the velocity command to be passed to the robot base
        * @return True if a valid trajectory was found, false otherwise
        */
-    bool computeVelocityCommands(geometry_msgs::Twist &cmd_vel);
+      bool computeVelocityCommands(geometry_msgs::Twist &cmd_vel);
 
-    /**
+      /**
        * @brief  Check if the goal pose has been achieved
        * @return True if achieved, false otherwise
        */
-    bool isGoalReached();
+      bool isGoalReached();
 
-  private:
-    //Pointer to external objects (do NOT delete object)
-    costmap_2d::Costmap2DROS *costmap_ros_; ///<@brief pointer to costmap
-    tf2_ros::Buffer *tf_buffer;
+   private:
+      //Pointer to external objects (do NOT delete object)
+      costmap_2d::Costmap2DROS *costmap_ros_; ///<@brief pointer to costmap
+      tf2_ros::Buffer *tf_buffer;
 
-    // Topics & Services
-    ros::Subscriber odom_sub;
-    ros::Publisher path_pub;  ///<@brief publishes to the bubble shape to visualize on rviz
+      // Topics & Services
+      ros::Subscriber odom_sub;
+      ros::Publisher path_pub; ///<@brief publishes to the bubble shape to visualize on rviz
 
-    // Data
-    std::vector<geometry_msgs::PoseStamped> plan; // contains the global plan
-    geometry_msgs::Twist cmd;                     // contains the velocity
-    visualization_msgs::Marker points;
-    geometry_msgs::Pose current_pose;
+      // Data
+      std::vector<geometry_msgs::PoseStamped> plan; // contains the global plan
+      geometry_msgs::Twist cmd;                     // contains the velocity
+      visualization_msgs::Marker points;
+      geometry_msgs::Pose current_pose;
 
-    static const string ODOM_INPUT_TOPIC;
-    // Flags
-    bool goal_reached_;
-    bool initialized_;
+      static const string ODOM_INPUT_TOPIC;
+      // Flags
+      bool goal_reached_;
+      bool initialized_;
 
-    void pathVisualization();
-    double getDistance(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose);
-    double getTurnAngle(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose);
-    void odomCallback(const nav_msgs::Odometry::ConstPtr &msg);
-  };
+      void pathVisualization();
+      double getDistance(geometry_msgs::PoseStamped endPose);
+      double getTurnAngle(geometry_msgs::PoseStamped endPose);
+      void odomCallback(const nav_msgs::Odometry::ConstPtr &msg);
+   };
 }; // namespace point_drive_planner
 
 #endif

@@ -93,8 +93,8 @@ namespace point_drive_planner
       geometry_msgs::PoseStamped lastPose = this->plan.back();
       // @Todo -- compute turn angle and distance here....
       ROS_INFO("Computing cmd vel.....");
-      ROS_INFO("distance = %s", to_string(this->getDistance(startPose, lastPose)).c_str());
-      this->getTurnAngle(startPose, lastPose);
+      ROS_INFO("distance = %s", to_string(this->getDistance(lastPose)).c_str());
+      ROS_INFO("turn angle = %s", to_string(this->getTurnAngle(lastPose)).c_str());
     }
     else
     {
@@ -127,29 +127,58 @@ namespace point_drive_planner
     path_pub.publish(points);
   }
 
-  double PointDrivePlannerROS::getDistance(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose)
+  double PointDrivePlannerROS::getDistance(geometry_msgs::PoseStamped endPose)
   {
     double a_x = this->current_pose.position.x, a_y = this->current_pose.position.y;
     double b_x = endPose.pose.position.x, b_y = endPose.pose.position.y;
     return sqrt((a_x - b_x) * (a_x - b_x) + (a_y - b_y) * (a_y - b_y));
   }
 
-  double PointDrivePlannerROS::getTurnAngle(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose)
+  double PointDrivePlannerROS::getTurnAngle(geometry_msgs::PoseStamped endPose)
   {
     tf2::Quaternion currentQuat;
-    double x1, y1, x2, y2, roll, pitch, yaw_start;
-    x1 = this->current_pose.position.x, y1 = startPose.pose.position.y; 
-    x2 = endPose.pose.position.x, y2 = endPose.pose.position.y;
-    double dest_bearing = atan2(y2 - y1, x2 - x1);
+    double x1, y1, x2, y2, roll, pitch, yaw_start, dest_bearing, angle_diff, angle_sign = 1, opp_angle_diff;
+
+    x1 = this->current_pose.position.x;
+    y1 = this->current_pose.position.y;
+    x2 = endPose.pose.position.x;
+    y2 = endPose.pose.position.y;
     tf2::convert(this->current_pose.orientation, currentQuat);
     tf2::Matrix3x3(currentQuat).getRPY(roll, pitch, yaw_start);
-    ROS_INFO("start_angle = %s end_angle = %s", to_string(yaw_start).c_str(), to_string(dest_bearing).c_str());
-    return 0;
+    yaw_start = yaw_start >= 0 ? yaw_start : yaw_start + (2 * PI);
+
+    dest_bearing = atan2(y2 - y1, x2 - x1);
+    dest_bearing = dest_bearing >= 0 ? dest_bearing : dest_bearing + (2 * PI);
+
+    angle_diff = dest_bearing - yaw_start;
+    angle_sign = angle_diff >= 0 ? 1 : -1;
+    opp_angle_diff = (2 * PI) - abs(angle_diff);
+
+    if (opp_angle_diff < abs(angle_diff))
+    {
+      angle_diff = opp_angle_diff * -angle_sign;
+    }
+
+    return angle_diff;
   }
 
-  void PointDrivePlannerROS::odomCallback(const nav_msgs::Odometry::ConstPtr &msg) 
+  void PointDrivePlannerROS::odomCallback(const nav_msgs::Odometry::ConstPtr &msg)
   {
     this->current_pose = msg->pose.pose;
   }
+
+  /*
+def compute_turn(a1, a2):
+    diff = normalize_angle(a1) - normalize_angle(a2)
+    diff_sign = -1 if diff < 0 else 1
+    alt_diff = (2 * pi) - abs(diff)
+    if alt_diff < abs(diff):
+        diff = (diff_sign * -1) * alt_diff
+    return diff
+
+
+def normalize_angle(a):
+    return a if a >= 0 else a + 2*pi
+*/
 
 } // namespace point_drive_planner
