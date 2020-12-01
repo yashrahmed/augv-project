@@ -10,6 +10,7 @@ PLUGINLIB_EXPORT_CLASS(point_drive_planner::PointDrivePlannerROS, nav_core::Base
 
 namespace point_drive_planner
 {
+  const string PointDrivePlannerROS::ODOM_INPUT_TOPIC = "odom";
 
   PointDrivePlannerROS::PointDrivePlannerROS() : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false) {}
 
@@ -35,6 +36,7 @@ namespace point_drive_planner
       // subscribe to topics (to get odometry information, we need to get a handle to the topic in the global namespace)
       ros::NodeHandle gn;
       path_pub = gn.advertise<visualization_msgs::Marker>("visualization_marker", 10);
+      odom_sub = gn.subscribe<nav_msgs::Odometry>(PointDrivePlannerROS::ODOM_INPUT_TOPIC, 100, &PointDrivePlannerROS::odomCallback, this);
 
       //initializing the visualization markers
       points.header.frame_id = "/map";
@@ -62,21 +64,16 @@ namespace point_drive_planner
 
   bool PointDrivePlannerROS::setPlan(const std::vector<geometry_msgs::PoseStamped> &orig_global_plan)
   {
-
     // check if plugin initialized
     if (!initialized_)
     {
       ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
       return false;
     }
-
     //set plan
     plan = orig_global_plan;
-
     // set goal as not reached
     goal_reached_ = false;
-
-    ROS_INFO("Global plan updated.....");
     return true;
   }
 
@@ -90,7 +87,19 @@ namespace point_drive_planner
       return false;
     }
 
-    ROS_INFO("Computing cmd vel.....");
+    if (this->plan.size() > 2)
+    {
+      geometry_msgs::PoseStamped startPose = this->plan.front();
+      geometry_msgs::PoseStamped lastPose = this->plan.back();
+      // @Todo -- compute turn angle and distance here....
+      ROS_INFO("Computing cmd vel.....");
+      ROS_INFO("distance = %s", to_string(this->getDistance(startPose, lastPose)).c_str());
+      this->getTurnAngle(startPose, lastPose);
+    }
+    else
+    {
+      goal_reached_ = true;
+    }
 
     return true;
   }
@@ -116,6 +125,31 @@ namespace point_drive_planner
     points.points.push_back(p);
 
     path_pub.publish(points);
+  }
+
+  double PointDrivePlannerROS::getDistance(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose)
+  {
+    double a_x = this->current_pose.position.x, a_y = this->current_pose.position.y;
+    double b_x = endPose.pose.position.x, b_y = endPose.pose.position.y;
+    return sqrt((a_x - b_x) * (a_x - b_x) + (a_y - b_y) * (a_y - b_y));
+  }
+
+  double PointDrivePlannerROS::getTurnAngle(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose)
+  {
+    tf2::Quaternion currentQuat;
+    double x1, y1, x2, y2, roll, pitch, yaw_start;
+    x1 = this->current_pose.position.x, y1 = startPose.pose.position.y; 
+    x2 = endPose.pose.position.x, y2 = endPose.pose.position.y;
+    double dest_bearing = atan2(y2 - y1, x2 - x1);
+    tf2::convert(this->current_pose.orientation, currentQuat);
+    tf2::Matrix3x3(currentQuat).getRPY(roll, pitch, yaw_start);
+    ROS_INFO("start_angle = %s end_angle = %s", to_string(yaw_start).c_str(), to_string(dest_bearing).c_str());
+    return 0;
+  }
+
+  void PointDrivePlannerROS::odomCallback(const nav_msgs::Odometry::ConstPtr &msg) 
+  {
+    this->current_pose = msg->pose.pose;
   }
 
 } // namespace point_drive_planner

@@ -12,11 +12,13 @@
 
 // time
 #include <time.h>
+#include <math.h>
 
 using namespace std;
 
 // msgs
 #include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
@@ -26,6 +28,9 @@ using namespace std;
 // transforms
 #include <angles/angles.h>
 #include <tf2_ros/buffer.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Matrix3x3.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
@@ -45,12 +50,6 @@ namespace point_drive_planner
    * @class PointDrivePlannerROS
    * @brief Plugin to the ros base_local_planner. Implements a wrapper for the Elastic Band Method
    */
-
-  struct pos
-  {
-
-    double x, y, az;
-  };
 
   class PointDrivePlannerROS : public nav_core::BaseLocalPlanner
   {
@@ -110,18 +109,24 @@ namespace point_drive_planner
     tf2_ros::Buffer *tf_buffer;
 
     // Topics & Services
+    ros::Subscriber odom_sub;
     ros::Publisher path_pub;  ///<@brief publishes to the bubble shape to visualize on rviz
 
     // Data
     std::vector<geometry_msgs::PoseStamped> plan; // contains the global plan
     geometry_msgs::Twist cmd;                     // contains the velocity
     visualization_msgs::Marker points;
+    geometry_msgs::Pose current_pose;
 
+    static const string ODOM_INPUT_TOPIC;
     // Flags
     bool goal_reached_;
     bool initialized_;
 
     void pathVisualization();
+    double getDistance(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose);
+    double getTurnAngle(geometry_msgs::PoseStamped startPose, geometry_msgs::PoseStamped endPose);
+    void odomCallback(const nav_msgs::Odometry::ConstPtr &msg);
   };
 }; // namespace point_drive_planner
 
