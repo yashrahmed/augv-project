@@ -1,0 +1,5 @@
+PointDrivePlannerROS:
+
+  drive_mode_theta_z_threshold: 0.044
+  theta_z_tolerance: 0.005
+  pos_tolerance: 0.01

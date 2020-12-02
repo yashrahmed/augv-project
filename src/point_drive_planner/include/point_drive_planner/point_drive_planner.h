@@ -38,6 +38,7 @@ using namespace std;
 // other
 #include <array>
 #include <vector>
+#include <typeinfo>
 
 // definitions
 #define PI 3.14159265
@@ -122,6 +123,10 @@ namespace point_drive_planner
       static const double DEFAULT_THETA_Z_TOLERANCE;
       static const double DEFAULT_POS_TOLERANCE;
       static const double DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD;
+
+      double theta_z_tolerance;
+      double pos_tolerance;
+      double drive_mode_theta_z_threshold;
       // Flags
       bool goal_reached_;
       bool initialized_;

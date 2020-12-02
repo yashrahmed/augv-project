@@ -117,10 +117,6 @@ private:
     controller_manager::ControllerManager *manager;
 };
 
-/*
-rostopic pub --once /mobile_base_controller/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
-*/
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "AUGV_hardware_interface");

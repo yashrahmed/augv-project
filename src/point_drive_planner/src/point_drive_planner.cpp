@@ -11,9 +11,9 @@ PLUGINLIB_EXPORT_CLASS(point_drive_planner::PointDrivePlannerROS, nav_core::Base
 namespace point_drive_planner
 {
   const string PointDrivePlannerROS::ODOM_INPUT_TOPIC = "odom";
-  const double PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE = 0.005;
-  const double PointDrivePlannerROS::DEFAULT_POS_TOLERANCE = 0.01;
-  const double PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD = 0.044;
+  const double PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE = 1.005;
+  const double PointDrivePlannerROS::DEFAULT_POS_TOLERANCE = 1.01;
+  const double PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD = 1.044;
 
   PointDrivePlannerROS::PointDrivePlannerROS() : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false) {}
 
@@ -37,21 +37,17 @@ namespace point_drive_planner
       this->tf_buffer = tf_buffer;
 
       // subscribe to topics (to get odometry information, we need to get a handle to the topic in the global namespace)
-      ros::NodeHandle gn;
+      ros::NodeHandle gn("/" + ros::this_node::getName() + "/" + name);
       path_pub = gn.advertise<visualization_msgs::Marker>("visualization_marker", 10);
       odom_sub = gn.subscribe<nav_msgs::Odometry>(PointDrivePlannerROS::ODOM_INPUT_TOPIC, 100, &PointDrivePlannerROS::odomCallback, this);
 
-      //initializing the visualization markers
-      points.header.frame_id = "/map";
-      points.header.stamp = ros::Time::now();
-      points.ns = "path_drawing";
-      points.action = visualization_msgs::Marker::ADD;
-      points.id = 0;
-      points.type = visualization_msgs::Marker::POINTS;
-      points.scale.x = 0.1;
-      points.scale.y = 0.1;
-      points.color.g = 1.0f;
-      points.color.a = 1.0;
+      gn.param("theta_z_tolerance", theta_z_tolerance, DEFAULT_THETA_Z_TOLERANCE);
+      gn.param("pos_tolerance", pos_tolerance, DEFAULT_POS_TOLERANCE);
+      gn.param("drive_mode_theta_z_threshold", drive_mode_theta_z_threshold, DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD);
+      
+      ROS_INFO("theta_z_tolerance = %f", theta_z_tolerance);
+      ROS_INFO("pos_tolerance = %f", pos_tolerance);
+      ROS_INFO("drive_mode_theta_z_threshold = %f", drive_mode_theta_z_threshold);
 
       // set initialized flag
       initialized_ = true;
