@@ -37,13 +37,16 @@ namespace point_drive_planner
       this->tf_buffer = tf_buffer;
 
       // subscribe to topics (to get odometry information, we need to get a handle to the topic in the global namespace)
-      ros::NodeHandle gn("/" + ros::this_node::getName() + "/" + name);
+      ros::NodeHandle gn;
       path_pub = gn.advertise<visualization_msgs::Marker>("visualization_marker", 10);
-      odom_sub = gn.subscribe<nav_msgs::Odometry>(PointDrivePlannerROS::ODOM_INPUT_TOPIC, 100, &PointDrivePlannerROS::odomCallback, this);
+      odom_sub = gn.subscribe<nav_msgs::Odometry>(PointDrivePlannerROS::ODOM_INPUT_TOPIC,
+                                                  100,
+                                                  &PointDrivePlannerROS::odomCallback,
+                                                  this);
 
-      gn.param("theta_z_tolerance", theta_z_tolerance, DEFAULT_THETA_Z_TOLERANCE);
-      gn.param("pos_tolerance", pos_tolerance, DEFAULT_POS_TOLERANCE);
-      gn.param("drive_mode_theta_z_threshold", drive_mode_theta_z_threshold, DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD);
+      gn.param(ros::this_node::getName()+ "/" + name + "/theta_z_tolerance", theta_z_tolerance, DEFAULT_THETA_Z_TOLERANCE);
+      gn.param(ros::this_node::getName()+ "/" + name + "/pos_tolerance", pos_tolerance, DEFAULT_POS_TOLERANCE);
+      gn.param(ros::this_node::getName()+ "/" + name + "/drive_mode_theta_z_threshold", drive_mode_theta_z_threshold, DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD);
 
       ROS_INFO("theta_z_tolerance = %f", theta_z_tolerance);
       ROS_INFO("pos_tolerance = %f", pos_tolerance);
