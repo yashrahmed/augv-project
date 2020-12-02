@@ -192,7 +192,7 @@ Visualization Manager:
         Shaft Length: 0.25
         Shaft Radius: 0.05000000074505806
         Value: Arrow
-      Topic: /odometry/filtered
+      Topic: /odometry/filtered_map
       Unreliable: false
       Value: true
     - Acceleration properties:
@@ -262,7 +262,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.9935286045074463
+      Distance: 4.444861888885498
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -278,9 +278,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7297979593276978
+      Pitch: 1.1997976303100586
       Target Frame: <Fixed Frame>
-      Yaw: 1.0403361320495605
+      Yaw: 1.0653362274169922
     Saved: ~
 Window Geometry:
   Displays:
