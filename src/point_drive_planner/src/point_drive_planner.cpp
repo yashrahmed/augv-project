@@ -44,7 +44,7 @@ namespace point_drive_planner
       gn.param("theta_z_tolerance", theta_z_tolerance, DEFAULT_THETA_Z_TOLERANCE);
       gn.param("pos_tolerance", pos_tolerance, DEFAULT_POS_TOLERANCE);
       gn.param("drive_mode_theta_z_threshold", drive_mode_theta_z_threshold, DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD);
-      
+
       ROS_INFO("theta_z_tolerance = %f", theta_z_tolerance);
       ROS_INFO("pos_tolerance = %f", pos_tolerance);
       ROS_INFO("drive_mode_theta_z_threshold = %f", drive_mode_theta_z_threshold);
@@ -92,19 +92,19 @@ namespace point_drive_planner
       geometry_msgs::PoseStamped lastPose = this->plan.back();
       turn_angle = this->getTurnAngle(lastPose);
       travel_dist = this->getDistance(lastPose);
-      if (abs(turn_angle) >= PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD)
+      if (abs(turn_angle) >= drive_mode_theta_z_threshold)
       {
         cmd_vel.angular.z = turn_angle;
       }
       else
       {
-        cmd_vel.angular.z = abs(turn_angle) >= PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE ? turn_angle : 0.0;
-        cmd_vel.linear.x = abs(travel_dist) >= PointDrivePlannerROS::DEFAULT_POS_TOLERANCE && travel_dist > 0.0
+        cmd_vel.angular.z = abs(turn_angle) >= theta_z_tolerance ? turn_angle : 0.0;
+        cmd_vel.linear.x = abs(travel_dist) >= pos_tolerance && travel_dist > 0.0
                                ? travel_dist
                                : 0.0;
       }
 
-      goal_reached_ = abs(turn_angle) < PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE && abs(travel_dist) < PointDrivePlannerROS::DEFAULT_POS_TOLERANCE;
+      goal_reached_ = abs(turn_angle) < theta_z_tolerance && abs(travel_dist) < pos_tolerance;
     }
     else
     {
