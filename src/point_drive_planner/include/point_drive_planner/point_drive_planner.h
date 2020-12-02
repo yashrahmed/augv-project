@@ -111,7 +111,6 @@ namespace point_drive_planner
 
       // Topics & Services
       ros::Subscriber odom_sub;
-      ros::Publisher path_pub; ///<@brief publishes to the bubble shape to visualize on rviz
 
       // Data
       std::vector<geometry_msgs::PoseStamped> plan; // contains the global plan
@@ -131,7 +130,6 @@ namespace point_drive_planner
       bool goal_reached_;
       bool initialized_;
 
-      void pathVisualization();
       double getDistance(geometry_msgs::PoseStamped endPose);
       double getTurnAngle(geometry_msgs::PoseStamped endPose);
       void odomCallback(const nav_msgs::Odometry::ConstPtr &msg);
