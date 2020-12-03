@@ -7,12 +7,12 @@ Panels:
         - /Global Options1
         - /Status1
         - /Odometry1/Shape1
-        - /Path2
         - /Odometry2
         - /Odometry2/Shape1
         - /Odometry2/Covariance1
         - /Imu1/Box properties1
         - /Imu1/Axes properties1
+        - /Polygon1
       Splitter Ratio: 0.6294117569923401
     Tree Height: 719
   - Class: rviz/Selection
@@ -234,6 +234,25 @@ Visualization Manager:
         {}
       Update Interval: 0
       Value: false
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 85; 87; 83
+      Enabled: true
+      Name: Polygon
+      Queue Size: 10
+      Topic: /move_base/global_costmap/footprint
+      Unreliable: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /move_base/global_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -262,7 +281,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.444861888885498
+      Distance: 4.803493499755859
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -278,9 +297,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1997976303100586
+      Pitch: 0.6697981357574463
       Target Frame: <Fixed Frame>
-      Yaw: 1.0653362274169922
+      Yaw: 0.765336811542511
     Saved: ~
 Window Geometry:
   Displays:
