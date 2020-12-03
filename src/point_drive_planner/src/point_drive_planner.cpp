@@ -14,6 +14,7 @@ namespace point_drive_planner
   const double PointDrivePlannerROS::DEFAULT_THETA_Z_TOLERANCE = 1.005;
   const double PointDrivePlannerROS::DEFAULT_POS_TOLERANCE = 1.01;
   const double PointDrivePlannerROS::DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD = 1.044;
+  const double PointDrivePlannerROS::DEFAULT_PLAN_WINDOW_DIST_THRESHOLD = -1;
 
   PointDrivePlannerROS::PointDrivePlannerROS() : costmap_ros_(NULL), tf_buffer(NULL), initialized_(false) {}
 
@@ -46,10 +47,12 @@ namespace point_drive_planner
       gn.param(ros::this_node::getName() + "/" + name + "/theta_z_tolerance", theta_z_tolerance, DEFAULT_THETA_Z_TOLERANCE);
       gn.param(ros::this_node::getName() + "/" + name + "/pos_tolerance", pos_tolerance, DEFAULT_POS_TOLERANCE);
       gn.param(ros::this_node::getName() + "/" + name + "/drive_mode_theta_z_threshold", drive_mode_theta_z_threshold, DEFAULT_DRIVE_MODE_THETA_Z_THRESHOLD);
+      gn.param(ros::this_node::getName() + "/" + name + "/plan_window_dist_threshold", plan_window_dist_threshold, DEFAULT_PLAN_WINDOW_DIST_THRESHOLD);
 
       ROS_INFO("theta_z_tolerance = %f", theta_z_tolerance);
       ROS_INFO("pos_tolerance = %f", pos_tolerance);
       ROS_INFO("drive_mode_theta_z_threshold = %f", drive_mode_theta_z_threshold);
+      ROS_INFO("plan_window_dist_threshold = %f", plan_window_dist_threshold);
 
       // set initialized flag
       initialized_ = true;
@@ -80,7 +83,8 @@ namespace point_drive_planner
 
   bool PointDrivePlannerROS::computeVelocityCommands(geometry_msgs::Twist &cmd_vel)
   {
-    double turn_angle, travel_dist;
+    double turn_angle, travel_dist, dist_to_a_plan_pose;
+    geometry_msgs::PoseStamped targetPose;
 
     // check if plugin initialized
     if (!initialized_)
@@ -91,9 +95,22 @@ namespace point_drive_planner
 
     if (this->plan.size() > 2)
     {
-      geometry_msgs::PoseStamped lastPose = this->plan.back();
-      turn_angle = this->getTurnAngle(lastPose);
-      travel_dist = this->getDistance(lastPose);
+      if (plan_window_dist_threshold > 0) // only scan the plan for a suitable point of threshold is set.
+      {
+        for (int i = 0; i < this->plan.size(); i++)
+        {
+          dist_to_a_plan_pose = this->getDistance(this->plan.at(i));
+          targetPose = this->plan.at(i);
+          if (dist_to_a_plan_pose > plan_window_dist_threshold) break;
+        }
+      }
+      else
+      {
+        targetPose = this->plan.back();
+      }
+
+      turn_angle = this->getTurnAngle(targetPose);
+      travel_dist = this->getDistance(targetPose);
       if (abs(turn_angle) >= drive_mode_theta_z_threshold)
       {
         cmd_vel.angular.z = turn_angle;
