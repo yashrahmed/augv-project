@@ -1,0 +1,20 @@
+<launch>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find augv_navigation)/resources/maps/map.yaml"/>
+
+    <!-- move_base -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <param name="base_local_planner" value="point_drive_planner/PointDrivePlannerROS" />
+        <rosparam file="$(find augv_navigation)/params/local_planner_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find augv_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find augv_navigation)/params/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find augv_navigation)/params/move_base_params.yaml" command="load" />
+        <remap from="cmd_vel" to="/mobile_base_controller/cmd_vel"/>
+        <remap from="odom" to="/odometry/filtered_map"/>
+    </node>
+
+    <node pkg="rviz" type="rviz" name="rviz_imu" args="-d $(find augv_navigation)/rviz/rviz_nav.rviz"/>
+
+</launch>

@@ -1,4 +1,4 @@
-image: ./custom.png
+image: ./custom_with_obstacle.png
 resolution: 0.0100000
 origin: [-1.85, -1.85, 0.0]
 negate: 0
