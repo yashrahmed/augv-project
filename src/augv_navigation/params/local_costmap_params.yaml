@@ -7,7 +7,7 @@ local_costmap:
   # 3. Increasing publish frequency of the EKF nodes helps, but produces errors.
   # 4. transform tolerance does not help.
 
-  global_frame:  map 
+  global_frame:  odom 
   robot_base_frame: base_link
 
   transform_tolerance: 0.5  

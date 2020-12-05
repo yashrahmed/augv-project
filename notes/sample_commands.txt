@@ -16,8 +16,8 @@ rostopic pub --once /way_points_upload std_msgs/String '{data: "[[41.783631, -88
 rostopic pub --once /way_points_upload std_msgs/String '{data: "[[41.783572, -88.187026], [41.783495, -88.187053], [41.783480, -88.186919], [41.783558, -88.186896]]"}'
 
 # Command for map with obstacle
-rostopic pub --once /move_base_simple/goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 1.5, y: 1.0, z: 0.0}, orientation: {w: 1.0}}}'
+rostopic pub --once /move_base_simple/goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "odom"}, pose: {position: {x: 1.5, y: 1.0, z: 0.0}, orientation: {w: 1.0}}}'
 
 # Commands for apartment map
 # Kitchen to living room
-rostopic pub --once /move_base_simple/goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 2.5, y: 0.15, z: 0.0}, orientation: {w: 1.0}}}'
+rostopic pub --once /move_base_simple/goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "odom"}, pose: {position: {x: 2.5, y: 0.15, z: 0.0}, orientation: {w: 1.0}}}'

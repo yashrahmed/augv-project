@@ -33,6 +33,7 @@ ODOM_OUTPUT_TOPIC = '/my/odometry/raw'
 ANGLE_DIST_OUTPUT_TOPIC = '/my/sensor/angle_and_dist'
 ODOM_FRAME_ID = 'my_odom'
 BASE_FRAME_ID = 'my_base_link'
+DEFAULT_RATE_HZ = 20
 
 
 current_state = {
@@ -146,6 +147,9 @@ def start_node():
         f'{rospy.get_name()}/base_frame_id', BASE_FRAME_ID)
     odom_frame_id = rospy.get_param(
         f'{rospy.get_name()}/odom_frame_id', ODOM_FRAME_ID)
+    frequency = rospy.get_param(
+        f'{rospy.get_name()}/frequency', DEFAULT_RATE_HZ)
+    delay = 1/frequency
 
     odom_output_publisher = rospy.Publisher(
         odom_output_topic, Odometry, queue_size=1000)
@@ -156,7 +160,7 @@ def start_node():
                      callback=update_imu_state)
     rospy.Subscriber(odom_input_topic, Odometry,
                      callback=update_odom_state)
-    rospy.Timer(rospy.Duration(0.05),
+    rospy.Timer(rospy.Duration(delay),
                 callback=lambda _: compute_odometry_from_current_state(odom_output_publisher,
                                                                        angle_dist_publisher,
                                                                        base_frame_id,

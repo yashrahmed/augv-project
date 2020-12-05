@@ -14,6 +14,11 @@ ROS_RATE_HZ = 50
 INPUT_TOPIC = '/input'
 OUTPUT_TOPIC = '/data'
 FRAME_ID = 'my_base_link'
+DEFAULT_RATE_HZ = 20
+
+CURRENT_STATE = {
+    'value': None
+}
 
 
 def extract_imu_data(message):
@@ -64,11 +69,15 @@ def create_imu_message(orientation_data, frame_id):
     return message
 
 
-def publish_imu_data(message, args):
-    publisher, frame_id = args
+def publish_imu_data(publisher, frame_id):
+    if CURRENT_STATE['value']:
+        publisher.publish(create_imu_message(CURRENT_STATE['value'], frame_id))
+
+
+def update_imu_state_data(message):
     orientation_data = extract_imu_data(message.data)
     if orientation_data:
-        publisher.publish(create_imu_message(orientation_data, frame_id))
+        CURRENT_STATE['value'] = orientation_data
 
 
 def start_node():
@@ -79,9 +88,14 @@ def start_node():
         f'{rospy.get_name()}/input_topic', INPUT_TOPIC)
     output_topic = rospy.get_param(
         f'{rospy.get_name()}/output_topic', OUTPUT_TOPIC)
+    frequency = rospy.get_param(
+        f'{rospy.get_name()}/frequency', DEFAULT_RATE_HZ)
+    delay = 1/frequency
     publisher = rospy.Publisher(output_topic, Imu, queue_size=1000)
     rospy.Subscriber(input_topic, String,
-                     callback=publish_imu_data, callback_args=(publisher, frame_id))
+                     callback=update_imu_state_data)
+    rospy.Timer(rospy.Duration(delay),
+                callback=lambda _: publish_imu_data(publisher, frame_id))
     rospy.spin()
 
 
