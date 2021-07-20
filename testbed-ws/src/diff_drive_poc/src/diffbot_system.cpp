@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "diff-drive-poc/diffbot_system.hpp"
+#include "diff_drive_poc/diffbot_system.hpp"
 
 #include <chrono>
 #include <cmath>

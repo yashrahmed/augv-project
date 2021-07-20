@@ -34,7 +34,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("diff-drive-poc"), "urdf", "diffbot_system.urdf.xacro"]
+                [FindPackageShare("diff_drive_poc"), "urdf", "diffbot_system.urdf.xacro"]
             ),
         ]
     )
@@ -42,7 +42,7 @@ def generate_launch_description():
 
     diffbot_diff_drive_controller = PathJoinSubstitution(
         [
-            FindPackageShare("diff-drive-poc"),
+            FindPackageShare("diff_drive_poc"),
             "config",
             "diffbot_diff_drive_controller.yaml",
         ]
@@ -79,7 +79,7 @@ def generate_launch_description():
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("diff-drive-poc"), "rviz", "diffbot.rviz"]
+        [FindPackageShare("diff_drive_poc"), "rviz", "diffbot.rviz"]
     )
     rviz_node = Node(
         package="rviz2",

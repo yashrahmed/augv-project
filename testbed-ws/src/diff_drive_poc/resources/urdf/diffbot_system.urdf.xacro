@@ -12,16 +12,16 @@ https://github.com/ros-simulation/gazebo_ros_demos/blob/kinetic-devel/diffbot_de
   <xacro:arg name="fake_sensor_commands" default="false" />
   <xacro:arg name="prefix" default="" />
 
-  <xacro:include filename="$(find diff-drive-poc)/urdf/diffbot.urdf.xacro" />
+  <xacro:include filename="$(find diff_drive_poc)/urdf/diffbot.urdf.xacro" />
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find diff-drive-poc)/gazebo/diffbot.gazebo.xacro" />
+  <xacro:include filename="$(find diff_drive_poc)/gazebo/diffbot.gazebo.xacro" />
 
   <!-- Import Rviz colors -->
-  <xacro:include filename="$(find diff-drive-poc)/gazebo/diffbot.materials.xacro" />
+  <xacro:include filename="$(find diff_drive_poc)/gazebo/diffbot.materials.xacro" />
 
   <!-- Import diffbot ros2_control description -->
-  <xacro:include filename="$(find diff-drive-poc)/system/diffbot_system.ros2_control.xacro" />
+  <xacro:include filename="$(find diff_drive_poc)/system/diffbot_system.ros2_control.xacro" />
 
   <xacro:diffbot prefix="$(arg prefix)" />
 

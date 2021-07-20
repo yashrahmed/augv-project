@@ -26,7 +26,7 @@
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "rclcpp/macros.hpp"
-#include "diff-drive-poc//visibility_control.h"
+#include "diff_drive_poc//visibility_control.h"
 
 namespace diff_drive_poc
 {

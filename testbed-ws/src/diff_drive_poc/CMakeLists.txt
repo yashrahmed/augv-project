@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(diff-drive-poc)
+project(diff_drive_poc)
 
 #Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -12,12 +12,14 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-
+find_package(ament_cmake_python REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy)
+find_package(rclpy REQUIRED)
 find_package(std_msgs)
+
+ament_python_install_package(${PROJECT_NAME})
 
 ## COMPILE
 add_library(
@@ -44,9 +46,15 @@ install(
   TARGETS ${PROJECT_NAME}
   DESTINATION lib
 )
+
 install(
   DIRECTORY include/
   DESTINATION include
+)
+
+install(
+  PROGRAMS scripts/arduino-motor-driver.py 
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
