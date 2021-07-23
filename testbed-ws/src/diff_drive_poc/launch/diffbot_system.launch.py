@@ -21,11 +21,22 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-
     arg_show_rviz = DeclareLaunchArgument(
         "start_rviz",
         default_value="false",
         description="start RViz automatically with the launch file",
+    )
+
+    arg_use_fake_hardware = DeclareLaunchArgument(
+        "use_fake_hardware",
+        default_value="false",
+        description="Start robot with fake hardware mirroring command to its states.",
+    )
+
+    arg_fake_sensor_commands = DeclareLaunchArgument(
+        "fake_sensor_commands",
+        default_value="false",
+        description="Fake sensor commands.",
     )
 
     # Get URDF via xacro
@@ -34,8 +45,13 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("diff_drive_poc"), "urdf", "diffbot_system.urdf.xacro"]
+                [FindPackageShare("diff_drive_poc"), "urdf",
+                 "diffbot_system.urdf.xacro"]
             ),
+            " use_fake_hardware:=",
+            LaunchConfiguration("use_fake_hardware"),
+            " fake_sensor_commands:=",
+            LaunchConfiguration("fake_sensor_commands"),
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -92,6 +108,8 @@ def generate_launch_description():
     return LaunchDescription(
         [
             arg_show_rviz,
+            arg_use_fake_hardware,
+            arg_fake_sensor_commands,
             node_robot_state_publisher,
             controller_manager_node,
             spawn_dd_controller,
