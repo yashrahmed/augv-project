@@ -17,7 +17,7 @@ class MotorVelCmdSubscriber(Node):
     def __init__(self, serial_conn):
         super().__init__('motor_vel_cmd_subscriber')
         self.serial_conn = serial_conn
-        self.subscription = self.create_subscription(String, '/driver/motor_vel_cmd', self.listener_cb, 100)
+        self.subscription = self.create_subscription(String, '/driver/motor_vel_cmd', self.listener_cb, 10)
     
     def listener_cb(self, msg):
         print(msg.data)
