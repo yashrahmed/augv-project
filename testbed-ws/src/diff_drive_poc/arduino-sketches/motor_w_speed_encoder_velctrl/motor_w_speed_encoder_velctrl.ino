@@ -76,7 +76,11 @@ float Motor::get_velocity() {
 
 void Motor::set_power(int power) {
   int direction = (power < 0) ? BWD : FWD;
-  analogWrite(this->spdPin, constrain(abs(power), 0, 255));
+  power = constrain(abs(power), 0, 255);
+  if (power < 50) {
+    direction = OFF;
+  }
+  analogWrite(this->spdPin, power);
   switch (direction) {
     case FWD:
       digitalWrite(this->dirPin1, HIGH);
@@ -193,6 +197,6 @@ void loop() {
   int left_output = left_controller.get_control_output(left_velocity);
   left_motor.set_power(left_output);
 
-  //  Serial.print(right_controller.get_target()); Serial.print(' '); Serial.print(velocity); Serial.print(' '); Serial.println(output);
+  //Serial.print(right_controller.get_target()); Serial.print(' '); Serial.print(right_motor.get_velocity()); Serial.print(' '); Serial.println(left_output);
   delay(20);
 }
