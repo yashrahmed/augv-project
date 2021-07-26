@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from math import pi
 from time import sleep
 
 import rclpy
@@ -20,8 +21,10 @@ class MotorVelCmdSubscriber(Node):
         self.subscription = self.create_subscription(String, '/driver/motor_vel_cmd', self.listener_cb, 10)
     
     def listener_cb(self, msg):
-        print(msg.data)
-        self.serial_conn.write(f'{msg.data}'.encode())
+        left_vel, right_vel = msg.data.split(' ')
+        left_vel = (float(left_vel) / (2 * pi)) * 408
+        right_vel = -(float(right_vel) / (2 * pi)) * 408
+        self.serial_conn.write(f'{left_vel} {right_vel}\n'.encode())
 
 
 if __name__ == '__main__':

@@ -94,6 +94,12 @@ def generate_launch_description():
         output="screen",
     )
 
+    robot_driver = Node(
+        package="diff_drive_poc",
+        executable="arduino-motor-driver.py",
+        output="screen"
+    )
+
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare("diff_drive_poc"), "rviz", "diffbot.rviz"]
     )
@@ -115,5 +121,6 @@ def generate_launch_description():
             spawn_dd_controller,
             spawn_jsb_controller,
             rviz_node,
+            robot_driver
         ]
     )

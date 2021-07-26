@@ -26,51 +26,68 @@
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "rclcpp/macros.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "diff_drive_poc/visibility_control.h"
+#include "std_msgs/msg/string.hpp"
 
 namespace diff_drive_poc
 {
-class DiffBotSystemHardware
-: public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
-{
-public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(DiffBotSystemHardware);
 
-  DIFF_DRIVE_POC_PUBLIC
-  hardware_interface::return_type configure(const hardware_interface::HardwareInfo & info) override;
+  class MotorVelCmdPublisherUtil : public rclcpp::Node
+  {
+  private:
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher;
 
-  DIFF_DRIVE_POC_PUBLIC
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+  public:
+    MotorVelCmdPublisherUtil();
+    void publish(float cmd_1, float cmd_2);
+  };
 
-  DIFF_DRIVE_POC_PUBLIC
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+  class DiffBotSystemHardware : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
+  {
+  public:
+    RCLCPP_SHARED_PTR_DEFINITIONS(DiffBotSystemHardware);
 
-  DIFF_DRIVE_POC_PUBLIC
-  hardware_interface::return_type start() override;
+    DiffBotSystemHardware();
 
-  DIFF_DRIVE_POC_PUBLIC
-  hardware_interface::return_type stop() override;
+    DIFF_DRIVE_POC_PUBLIC
+    hardware_interface::return_type configure(const hardware_interface::HardwareInfo &info) override;
 
-  DIFF_DRIVE_POC_PUBLIC
-  hardware_interface::return_type read() override;
+    DIFF_DRIVE_POC_PUBLIC
+    std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-  DIFF_DRIVE_POC_PUBLIC
-  hardware_interface::return_type write() override;
+    DIFF_DRIVE_POC_PUBLIC
+    std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-private:
-  // Parameters for the DiffBot simulation
-  double hw_start_sec_;
-  double hw_stop_sec_;
+    DIFF_DRIVE_POC_PUBLIC
+    hardware_interface::return_type start() override;
 
-  // Store the command for the simulated robot
-  std::vector<double> hw_commands_;
-  std::vector<double> hw_positions_;
-  std::vector<double> hw_velocities_;
+    DIFF_DRIVE_POC_PUBLIC
+    hardware_interface::return_type stop() override;
 
-  // Store the wheeled robot position
-  double base_x_, base_y_, base_theta_;
-};
+    DIFF_DRIVE_POC_PUBLIC
+    hardware_interface::return_type read() override;
 
-}  // namespace diff_drive_poc
+    DIFF_DRIVE_POC_PUBLIC
+    hardware_interface::return_type write() override;
 
-#endif  // DIFF_DRIVE_POC__DIFFBOT_SYSTEM_HPP_
+  private:
+    // Parameters for the DiffBot simulation
+    double hw_start_sec_;
+    double hw_stop_sec_;
+
+    // Store the command for the simulated robot
+    std::vector<double> hw_commands_;
+    std::vector<double> hw_positions_;
+    std::vector<double> hw_velocities_;
+
+    // Store the wheeled robot position
+    double base_x_, base_y_, base_theta_;
+
+    //
+    MotorVelCmdPublisherUtil publisher_util;
+  };
+
+} // namespace diff_drive_poc
+
+#endif // DIFF_DRIVE_POC__DIFFBOT_SYSTEM_HPP_
